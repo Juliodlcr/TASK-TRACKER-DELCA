@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#080808" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Habit Tracker" />
-  <title>Habit Tracker</title>
+  <meta name="apple-mobile-web-app-title" content="Habit Tracker DELCA" />
+  <title>Habit Tracker DELCA</title>
   <link rel="manifest" href="manifest.json" />
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
@@ -118,10 +118,10 @@
     }
 
     /* ── SECTION SIZES ── */
-    .row-habits   { flex: 3; }
-    .row-hchart   { flex: 2; }
-    .row-mental   { flex: 2.5; }
-    .row-mchart   { flex: 2; }
+    .row-habits   { flex: 4; }
+    .row-hchart   { flex: 1.8; }
+    .row-mental   { flex: 2; }
+    .row-mchart   { flex: 1.8; }
 
     /* ── HABIT TABLE ── */
     .habit-table { border-collapse: collapse; }
@@ -353,7 +353,7 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-left">
-      <span class="topbar-title">✦ Habit Tracker</span>
+      <span class="topbar-title">✦ Habit Tracker DELCA</span>
       <div class="topbar-month">
         <button class="mn-btn" id="d-prev">‹</button>
         <span class="mn-lbl" id="d-lbl"></span>
@@ -544,7 +544,7 @@
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
 const WC = ['#22c55e','#16a34a','#15803d','#14532d','#166534'];
 const BC = ['#22c55e','#4ade80','#16a34a','#86efac','#059669','#34d399','#bbf7d0','#6ee7b7','#a7f3d0','#4ade80'];
-const MC_COLORS = ['#22c55e','#86efac','#4ade80']; // Mañana, Tarde, Noche
+const MC_COLORS = ['#22c55e','#38bdf8','#f472b6']; // Mañana=verde, Tarde=azul, Noche=rosa
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
@@ -754,7 +754,21 @@ function drawMentalChart(id,y,m){
 
   seriesData.forEach((pts,ri)=>{
     const color=MC_COLORS[ri];
-    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.lineJoin='round';
+    // fill area under the line
+    const validPts=pts.map((v,i)=>v!==null?{x:px(i),y:py(v)}:null).filter(Boolean);
+    if(validPts.length>1){
+      ctx.beginPath();
+      ctx.moveTo(validPts[0].x,H-pad.b);
+      validPts.forEach(p=>ctx.lineTo(p.x,p.y));
+      ctx.lineTo(validPts[validPts.length-1].x,H-pad.b);
+      ctx.closePath();
+      ctx.fillStyle=color.replace(')',',0.12)').replace('rgb(','rgba(').replace('#','')+
+        (color.startsWith('#')?color.slice(1):'');
+      // simpler alpha fill
+      ctx.save();ctx.globalAlpha=0.12;ctx.fillStyle=color;ctx.fill();ctx.restore();
+    }
+    // line
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';
     let started=false;
     pts.forEach((v,i)=>{
       if(v===null){started=false;return;}
@@ -765,7 +779,7 @@ function drawMentalChart(id,y,m){
     // dots
     pts.forEach((v,i)=>{
       if(v===null)return;
-      ctx.beginPath();ctx.arc(px(i),py(v),2,0,Math.PI*2);
+      ctx.beginPath();ctx.arc(px(i),py(v),2.5,0,Math.PI*2);
       ctx.fillStyle=color;ctx.fill();
     });
   });
@@ -775,8 +789,8 @@ function drawMentalChart(id,y,m){
   const leg=document.getElementById(legendId);
   if(leg){
     leg.innerHTML=MR.map((r,i)=>`<span style="display:flex;align-items:center;gap:4px">
-      <span style="width:10px;height:2px;background:${MC_COLORS[i]};display:inline-block;border-radius:2px"></span>
-      <span style="font-size:9px;color:var(--muted)">${r}</span>
+      <span style="width:16px;height:3px;background:${MC_COLORS[i]};display:inline-block;border-radius:2px"></span>
+      <span style="font-size:9px;color:${MC_COLORS[i]};font-weight:600">${r}</span>
     </span>`).join('');
   }
 }
