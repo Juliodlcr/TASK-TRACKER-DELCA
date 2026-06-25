@@ -807,8 +807,8 @@ function drawHabitChart(id,y,m){
     ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
     ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='8px sans-serif';
-    ctx.textAlign='left';
-    ctx.fillText(Math.round(v*100)+'%', 4, yy-2);
+    ctx.textAlign='right';
+    ctx.fillText(Math.round(v*100)+'%', pad.l-4, Math.max(yy+3, 9));
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
@@ -854,8 +854,8 @@ function drawMentalChart(id,y,m){
     ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
     ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='8px sans-serif';
-    ctx.textAlign='left';
-    ctx.fillText(v, 4, yy-2);
+    ctx.textAlign='right';
+    ctx.fillText(v, pad.l-4, Math.max(yy+3, 9));
   });
 
   seriesData.forEach((pts,ri)=>{
