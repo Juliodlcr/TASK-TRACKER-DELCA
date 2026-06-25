@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#080808" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Habit Tracker" />
@@ -17,29 +17,20 @@
       --surf2:   #1a1a1a;
       --border:  #2a2a2a;
       --text:    #f0f0f0;
-      --muted:   #666666;
+      --muted:   #555555;
       --accent:  #22c55e;
       --red:     #f87171;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100dvh;
-      overflow: hidden;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 12px;
-    }
+    html, body { height: 100dvh; overflow: hidden; background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; }
 
-    /* ═══════════════════════════════════════════
-       DESKTOP / TABLET  ≥ 768px
-       Fixed full-screen dashboard, zero page scroll
-    ═══════════════════════════════════════════ */
+    /* ═══════════════════════════════════
+       DESKTOP ≥ 768px — full dashboard
+    ═══════════════════════════════════ */
     #dashboard {
       display: none;
       height: 100dvh;
-      padding: 12px 16px 10px;
-      gap: 8px;
       flex-direction: column;
     }
     @media (min-width: 768px) {
@@ -49,246 +40,226 @@
 
     /* ── TOPBAR ── */
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       flex-shrink: 0;
-      gap: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
     }
-    .topbar-title { font-size: 17px; font-weight: 800; }
-    .topbar-right { display: flex; align-items: center; gap: 8px; }
-
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .topbar-title { font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+    .topbar-month { display: flex; align-items: center; gap: 6px; }
     .mn-btn {
       background: var(--surf2); border: 1px solid var(--border);
-      color: var(--text); width: 26px; height: 26px;
-      border-radius: 7px; cursor: pointer; font-size: 14px;
+      color: var(--text); width: 24px; height: 24px;
+      border-radius: 6px; cursor: pointer; font-size: 13px;
       display: flex; align-items: center; justify-content: center;
     }
-    .mn-label {
-      font-size: 13px; font-weight: 700;
-      min-width: 110px; text-align: center;
-    }
+    .mn-lbl { font-size: 12px; font-weight: 600; min-width: 100px; text-align: center; color: var(--muted); }
 
-    .action-btn {
+    /* stats inline */
+    .topbar-stats { display: flex; align-items: center; gap: 20px; }
+    .tstat { text-align: center; }
+    .tstat-val { font-size: 16px; font-weight: 800; color: var(--accent); line-height: 1; }
+    .tstat-lbl { font-size: 9px; color: var(--muted); margin-top: 1px; }
+
+    /* progress inline */
+    .topbar-prog { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 200px; }
+    .p-track { flex: 1; background: var(--surf2); border-radius: 999px; height: 5px; }
+    .p-fill  { height: 5px; border-radius: 999px; background: linear-gradient(90deg,#16a34a,#22c55e); transition: width .4s; }
+    .p-pct   { font-size: 11px; font-weight: 700; color: var(--accent); width: 30px; text-align: right; }
+
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .act-btn {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 11px; border-radius: 8px; border: 1px solid var(--border);
+      padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border);
       font-size: 11px; font-weight: 600; cursor: pointer;
-      background: var(--surf2); color: var(--text);
-      transition: opacity .15s;
+      background: var(--surf2); color: var(--text); transition: opacity .15s;
     }
-    .action-btn.primary { background: var(--accent); color: #000; border-color: transparent; }
-    .action-btn svg { width: 13px; height: 13px; }
+    .act-btn.primary { background: var(--accent); color: #000; border-color: transparent; }
+    .act-btn svg { width: 12px; height: 12px; }
 
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      flex-shrink: 0;
-    }
-    .stat {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 8px 12px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .stat-icon { font-size: 18px; line-height: 1; }
-    .stat-val  { font-size: 19px; font-weight: 800; color: var(--accent); line-height: 1; }
-    .stat-lbl  { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
-    /* ── PROGRESS ── */
-    .progress-row {
-      display: flex; align-items: center; gap: 10px;
-      flex-shrink: 0;
-    }
-    .p-label { font-size: 10px; color: var(--muted); white-space: nowrap; }
-    .p-track { flex: 1; background: var(--surf2); border-radius: 999px; height: 7px; }
-    .p-fill   { height: 7px; border-radius: 999px; background: linear-gradient(90deg,#059669,#10b981); transition: width .4s; }
-    .p-pct    { font-size: 12px; font-weight: 700; color: var(--accent); width: 34px; text-align: right; }
-
-    /* ── MIDDLE ROW: habits + analysis ── */
-    .middle-row {
-      display: grid;
-      grid-template-columns: 1fr 200px;
-      gap: 8px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 10px 12px;
+    /* ── BODY: 4 rows ── */
+    .dash-body {
+      flex: 1; min-height: 0;
       display: flex; flex-direction: column;
-      min-height: 0; overflow: hidden;
     }
-    .card-title {
-      font-size: 10px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .06em;
-      margin-bottom: 8px; flex-shrink: 0;
+
+    /* each section */
+    .dash-row {
+      display: flex; min-height: 0;
+      border-bottom: 1px solid var(--border);
     }
-    .card-body { flex: 1; min-height: 0; overflow: hidden; }
-    .card-body.scroll-x { overflow-x: auto; overflow-y: hidden; }
+    .dash-row:last-child { border-bottom: none; }
+
+    /* left label column */
+    .row-label {
+      flex-shrink: 0; width: 110px;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 14px;
+      border-right: 1px solid var(--border);
+    }
+    .row-label-title { font-size: 11px; font-weight: 700; color: var(--text); }
+    .row-label-sub   { font-size: 9px; color: var(--muted); margin-top: 3px; }
+
+    /* main content of each row */
+    .row-content {
+      flex: 1; min-width: 0; min-height: 0;
+      overflow: hidden; position: relative;
+    }
+    .row-content.scroll-x { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+
+    /* right analysis column */
+    .row-analysis {
+      flex-shrink: 0; width: 180px;
+      border-left: 1px solid var(--border);
+      padding: 8px 12px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    /* ── SECTION SIZES ── */
+    .row-habits   { flex: 3; }
+    .row-hchart   { flex: 2; }
+    .row-mental   { flex: 2.5; }
+    .row-mchart   { flex: 2; }
 
     /* ── HABIT TABLE ── */
     .habit-table { border-collapse: collapse; }
     .habit-table th {
       font-size: 8px; color: var(--muted);
-      padding: 2px 3px; text-align: center; white-space: nowrap;
+      padding: 2px 4px; text-align: center; white-space: nowrap;
     }
-    .habit-table td { padding: 1px 2px; text-align: center; }
+    .habit-table td { padding: 1px 3px; text-align: center; }
     .habit-row td:first-child {
-      text-align: left; padding-right: 8px;
+      text-align: left; padding-right: 10px;
       font-size: 10px; white-space: nowrap; color: var(--text);
     }
-    .wlabel { font-size: 8px; font-weight: 700; padding: 0 3px; }
+    .wlbl { font-size: 9px; font-weight: 700; padding: 0 4px; }
 
     .chk {
-      width: 17px; height: 17px;
-      border-radius: 4px; border: 1px solid var(--border);
-      background: none; cursor: pointer;
+      width: 18px; height: 18px; border-radius: 4px;
+      border: 1px solid var(--border); background: none; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
-      transition: all .1s; flex-shrink: 0;
+      transition: all .1s;
     }
     .chk svg { display: none; width: 11px; height: 11px; }
     .chk.done { border-color: transparent; }
     .chk.done svg { display: block; }
 
-    /* ── ANALYSIS (right panel) ── */
-    .analysis-list { display: flex; flex-direction: column; gap: 7px; }
+    /* ── ANALYSIS LIST ── */
     .a-item { display: flex; flex-direction: column; gap: 3px; }
-    .a-row { display: flex; justify-content: space-between; font-size: 10px; }
-    .a-pct { font-weight: 700; color: var(--accent); }
-    .a-track { background: var(--surf2); border-radius: 999px; height: 5px; }
-    .a-fill  { height: 5px; border-radius: 999px; }
+    .a-row  { display: flex; justify-content: space-between; font-size: 9px; }
+    .a-pct  { font-weight: 700; color: var(--accent); }
+    .a-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px; }
+    .a-track { background: var(--surf2); border-radius: 999px; height: 4px; }
+    .a-fill  { height: 4px; border-radius: 999px; }
 
-    /* ── BOTTOM ROW: chart + mental + mindset ── */
-    .bottom-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 160px;
-      gap: 8px;
-      flex-shrink: 0;
-      height: 150px;
-    }
-
-    canvas { display: block; width: 100% !important; }
-
-    /* mental table */
-    .mental-wrap { overflow-x: auto; overflow-y: hidden; }
+    /* ── MENTAL TABLE ── */
     .mental-table { border-collapse: collapse; }
     .mental-table th { font-size: 8px; color: var(--muted); padding: 2px 4px; text-align: center; }
     .mental-table td { padding: 1px 3px; text-align: center; }
-    .mental-table td:first-child { text-align: left; font-size: 9px; padding-right: 8px; white-space: nowrap; }
+    .mental-table td:first-child { text-align: left; font-size: 10px; padding-right: 10px; white-space: nowrap; }
     .sbtn {
-      width: 22px; height: 22px; border-radius: 5px;
+      width: 20px; height: 20px; border-radius: 4px;
       border: 1px solid var(--border); background: none;
-      color: var(--text); font-size: 9px; cursor: pointer;
-      transition: all .12s;
+      color: var(--text); font-size: 9px; cursor: pointer; transition: all .1s;
     }
     .sbtn.on { border-color: transparent; color: #fff; font-weight: 700; }
 
     /* mindset scores */
-    .mindset-list { display: flex; flex-direction: column; gap: 8px; }
-    .ms-row { display: flex; flex-direction: column; gap: 3px; }
-    .ms-hdr { display: flex; justify-content: space-between; font-size: 10px; }
-    .ms-pct { font-weight: 700; color: var(--accent); }
+    .ms-item { display: flex; flex-direction: column; gap: 3px; }
+    .ms-row  { display: flex; justify-content: space-between; font-size: 9px; }
+    .ms-pct  { font-weight: 700; color: var(--accent); }
 
+    canvas { display: block; }
 
-
-    /* ═══════════════════════════════════════════
-       MOBILE  < 768px
-       Each tab fills 100dvh, no scroll
-    ═══════════════════════════════════════════ */
+    /* ═══════════════════════════════════
+       MOBILE — tab layout
+    ═══════════════════════════════════ */
     #mobile {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      overflow: hidden;
+      display: flex; flex-direction: column;
+      height: 100dvh; overflow: hidden;
     }
-
-    /* bottom nav */
     .m-nav {
       flex-shrink: 0;
       background: var(--surface); border-top: 1px solid var(--border);
-      display: flex;
+      display: flex; order: 2;
     }
     .m-nav button {
       flex: 1; padding: 10px 4px 7px;
       background: none; border: none; color: var(--muted);
       font-size: 9px; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 3px;
-      transition: color .2s;
     }
     .m-nav button.active { color: var(--accent); }
     .m-nav button svg { width: 19px; height: 19px; }
 
-    /* pages */
     .m-page {
       display: none; flex: 1; min-height: 0;
-      flex-direction: column; padding: 10px 12px;
-      gap: 8px; overflow: hidden;
+      flex-direction: column; overflow: hidden;
+      order: 1;
     }
     .m-page.active { display: flex; }
 
     /* mobile header */
-    .m-header {
-      display: flex; align-items: center;
-      justify-content: space-between; flex-shrink: 0;
+    .m-hdr {
+      flex-shrink: 0; display: flex; align-items: center;
+      justify-content: space-between; padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
     }
-    .m-header h1 { font-size: 16px; font-weight: 800; }
+    .m-hdr h1 { font-size: 15px; font-weight: 800; }
     .m-right { display: flex; align-items: center; gap: 6px; }
 
     /* mobile stats */
     .m-stats {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 6px; flex-shrink: 0;
+      flex-shrink: 0; display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1px; background: var(--border);
+      border-bottom: 1px solid var(--border);
     }
-    .m-stat {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 9px; padding: 8px; text-align: center;
-    }
-    .m-stat .v { font-size: 17px; font-weight: 800; color: var(--accent); }
-    .m-stat .l { font-size: 9px; color: var(--muted); margin-top: 2px; }
+    .m-stat { background: var(--surface); padding: 8px; text-align: center; }
+    .m-stat .v { font-size: 16px; font-weight: 800; color: var(--accent); }
+    .m-stat .l { font-size: 9px; color: var(--muted); }
 
     /* mobile progress */
-    .m-prog { flex-shrink: 0; }
-    .m-prog-hdr { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-    .m-prog-track { background: var(--surf2); border-radius: 999px; height: 6px; }
-    .m-prog-fill  { height: 6px; border-radius: 999px; background: linear-gradient(90deg,#059669,#10b981); transition: width .4s; }
-
-    /* mobile habit grid */
-    .m-grid-wrap {
-      flex: 1; min-height: 0;
-      overflow-x: scroll; overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+    .m-prog {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-bottom: 1px solid var(--border);
     }
-    .m-grid-wrap .habit-table { min-width: max-content; }
-    .m-grid-wrap .chk { width: 24px; height: 24px; }
-    .m-grid-wrap .habit-table th { padding: 3px 5px; font-size: 9px; }
-    .m-grid-wrap .habit-table td { padding: 2px 4px; }
-    .m-grid-wrap .habit-row td:first-child { font-size: 12px; padding-right: 14px; }
+    .m-prog-lbl { font-size: 9px; color: var(--muted); white-space: nowrap; }
+    .m-prog-track { flex: 1; background: var(--surf2); border-radius: 999px; height: 5px; }
+    .m-prog-fill  { height: 5px; border-radius: 999px; background: linear-gradient(90deg,#16a34a,#22c55e); transition: width .4s; }
+    .m-prog-pct   { font-size: 10px; font-weight: 700; color: var(--accent); width: 28px; text-align: right; }
+
+    /* mobile section label */
+    .m-sec {
+      flex-shrink: 0; padding: 6px 12px 4px;
+      font-size: 9px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    /* mobile scrollable grid */
+    .m-scroll { flex: 1; min-height: 0; overflow-x: auto; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 12px 8px; }
+    .m-scroll .habit-table { min-width: max-content; }
+    .m-scroll .chk { width: 22px; height: 22px; }
+    .m-scroll .habit-table th { padding: 3px 5px; font-size: 9px; }
+    .m-scroll .habit-table td { padding: 2px 4px; }
+    .m-scroll .habit-row td:first-child { font-size: 12px; padding-right: 14px; }
 
     /* mobile analysis */
-    .m-analysis { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .ma-item { flex-shrink: 0; }
-    .ma-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
-    .ma-pct { font-weight: 700; color: var(--accent); }
+    .m-analysis { flex: 1; min-height: 0; overflow-y: auto; padding: 0 12px 8px; display: flex; flex-direction: column; gap: 8px; }
+    .ma-item .ma-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+    .ma-item .ma-pct { font-weight: 700; color: var(--accent); }
     .ma-track { background: var(--surf2); border-radius: 999px; height: 6px; }
     .ma-fill  { height: 6px; border-radius: 999px; }
 
     /* mobile chart */
-    .m-chart-wrap {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 10px; flex-shrink: 0;
-    }
+    .m-chart-wrap { flex-shrink: 0; padding: 0 12px 8px; }
 
     /* mobile mental */
-    .m-mental-wrap { flex: 1; min-height: 0; overflow-x: auto; overflow-y: hidden; }
-
-    /* mobile section label */
-    .m-sec { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; flex-shrink: 0; }
+    .m-mental-scroll { flex: 1; min-height: 0; overflow-x: auto; overflow-y: hidden; padding: 0 12px 8px; -webkit-overflow-scrolling: touch; }
 
     /* settings */
-    .m-settings-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .m-settings-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
     .hedit {
       display: flex; align-items: center; gap: 8px;
       background: var(--surface); border: 1px solid var(--border);
@@ -296,32 +267,36 @@
     }
     .hedit input[type="text"] { flex:1; background:none; border:none; color:var(--text); font-size:13px; outline:none; }
     .icon-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:3px; }
-    .icon-btn:hover { color: var(--red); }
+    .icon-btn:hover { color:var(--red); }
     .add-btn {
-      width:100%; padding:11px; background:var(--surface);
+      flex-shrink: 0; width:100%; padding:11px; background:var(--surf2);
       border:1.5px dashed var(--border); color:var(--accent);
       border-radius:9px; cursor:pointer; font-size:12px; font-weight:600;
-      flex-shrink: 0;
     }
-    .info-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; flex-shrink: 0; }
+    .info-card { flex-shrink: 0; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; }
 
     /* export modal */
     #export-modal {
       display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,.8); z-index:500;
+      background:rgba(0,0,0,.85); z-index:500;
       align-items:center; justify-content:center; padding:16px;
     }
     #export-modal.show { display:flex; }
-    .modal-box {
-      background:var(--surface); border:1px solid var(--border);
-      border-radius:14px; padding:18px; width:100%; max-width:480px;
-    }
+    .modal-box { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; width:100%; max-width:480px; }
     .modal-box h2 { font-size:14px; font-weight:700; margin-bottom:12px; }
     #export-preview { width:100%; border-radius:8px; display:block; margin-bottom:12px; }
     .modal-actions { display:flex; gap:8px; }
     .modal-actions button { flex:1; padding:11px; border-radius:9px; border:none; cursor:pointer; font-size:12px; font-weight:600; }
     #btn-download { background:var(--accent); color:#000; }
     #btn-close-modal { background:var(--surf2); color:var(--text); }
+
+    /* settings modal */
+    #settings-modal {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,.85); z-index:500;
+      align-items:center; justify-content:center; padding:20px;
+    }
+    #settings-modal.show { display:flex; }
 
     /* install banner */
     #install-banner {
@@ -335,20 +310,17 @@
     #btn-install { background:var(--accent); color:#000; }
     #btn-dismiss { background:var(--surf2); color:var(--text); }
 
-    /* hidden share card */
     #share-card { position:fixed; left:-9999px; top:0; width:760px; }
   </style>
 </head>
 <body>
 
-<!-- Install Banner -->
 <div id="install-banner">
   <p>📲 Instala esta app para usarla offline</p>
   <button id="btn-install">Instalar</button>
   <button id="btn-dismiss">✕</button>
 </div>
 
-<!-- Export Modal -->
 <div id="export-modal">
   <div class="modal-box">
     <h2>Exportar progreso 📸</h2>
@@ -359,112 +331,139 @@
     </div>
   </div>
 </div>
+
+<div id="settings-modal">
+  <div class="modal-box" style="max-width:420px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="font-size:14px;font-weight:700">Editar Hábitos</h2>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div id="d-hedit-list" style="max-height:55vh;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
+    <button class="add-btn" id="d-add-btn" style="margin-top:10px">+ Agregar hábito</button>
+  </div>
+</div>
+
 <div id="share-card"></div>
 
-<!-- ═══════════════════════════════════════
+<!-- ══════════════════════════════════════════
      DESKTOP / TABLET — full dashboard
-═══════════════════════════════════════ -->
+══════════════════════════════════════════ -->
 <div id="dashboard">
 
-  <!-- Topbar -->
+  <!-- TOPBAR -->
   <div class="topbar">
-    <span class="topbar-title">✦ Habit Tracker — <span id="d-month-lbl" style="color:var(--accent)"></span></span>
-    <div class="topbar-right">
-      <button class="action-btn" onclick="openSettings()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Hábito
-      </button>
-      <button class="action-btn primary" onclick="startExport()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Compartir
-      </button>
-      <div style="display:flex;align-items:center;gap:5px">
+    <div class="topbar-left">
+      <span class="topbar-title">✦ Habit Tracker</span>
+      <div class="topbar-month">
         <button class="mn-btn" id="d-prev">‹</button>
-        <span class="mn-label" id="d-nav-lbl"></span>
+        <span class="mn-lbl" id="d-lbl"></span>
         <button class="mn-btn" id="d-next">›</button>
       </div>
     </div>
+    <div class="topbar-stats">
+      <div class="tstat"><div class="tstat-val" id="d-s1">0</div><div class="tstat-lbl">Hábitos</div></div>
+      <div class="tstat"><div class="tstat-val" id="d-s2">0</div><div class="tstat-lbl">Hoy</div></div>
+      <div class="tstat"><div class="tstat-val" id="d-s3">0</div><div class="tstat-lbl">Streak</div></div>
+    </div>
+    <div class="topbar-prog">
+      <span class="p-pct" id="d-ppct">0%</span>
+      <div class="p-track"><div class="p-fill" id="d-pfill" style="width:0%"></div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="act-btn" onclick="openSettings()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Hábito
+      </button>
+      <button class="act-btn primary" onclick="startExport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Compartir
+      </button>
+    </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat"><span class="stat-icon">✦</span><div><div class="stat-val" id="d-s1">0</div><div class="stat-lbl">Hábitos activos</div></div></div>
-    <div class="stat"><span class="stat-icon">✅</span><div><div class="stat-val" id="d-s2">0</div><div class="stat-lbl">Completados hoy</div></div></div>
-    <div class="stat"><span class="stat-icon">📈</span><div><div class="stat-val" id="d-s3">0%</div><div class="stat-lbl">Progreso del mes</div></div></div>
-    <div class="stat"><span class="stat-icon">🔥</span><div><div class="stat-val" id="d-s4">0</div><div class="stat-lbl">Días ≥50%</div></div></div>
-  </div>
+  <!-- BODY: 4 sections -->
+  <div class="dash-body">
 
-  <!-- Progress -->
-  <div class="progress-row">
-    <span class="p-label">Progreso del mes</span>
-    <div class="p-track"><div class="p-fill" id="d-pfill" style="width:0%"></div></div>
-    <span class="p-pct" id="d-ppct">0%</span>
-  </div>
-
-  <!-- Middle: habits + analysis -->
-  <div class="middle-row">
-    <div class="card">
-      <div class="card-title">Mis Hábitos</div>
-      <div class="card-body scroll-x">
+    <!-- 1. HABITS GRID -->
+    <div class="dash-row row-habits">
+      <div class="row-label">
+        <div class="row-label-title">Mis Hábitos</div>
+        <div class="row-label-sub" id="d-hab-sub"></div>
+      </div>
+      <div class="row-content scroll-x" style="padding:6px 10px">
         <table class="habit-table">
           <thead id="dh-head"></thead>
           <tbody id="dh-body"></tbody>
         </table>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Análisis</div>
-      <div class="card-body" style="overflow-y:auto">
-        <div class="analysis-list" id="d-analysis"></div>
+      <div class="row-analysis">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Análisis</div>
+        <div id="d-analysis" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
     </div>
-  </div>
 
-  <!-- Bottom: chart + mental + mindset -->
-  <div class="bottom-row">
-    <div class="card">
-      <div class="card-title">Progreso diario</div>
-      <div class="card-body"><canvas id="d-chart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Estado Mental</div>
-      <div class="card-body">
-        <div class="mental-wrap">
-          <table class="mental-table">
-            <thead id="dm-head"></thead>
-            <tbody id="dm-body"></tbody>
-          </table>
-        </div>
+    <!-- 2. HABITS CHART -->
+    <div class="dash-row row-hchart">
+      <div class="row-label">
+        <div class="row-label-title">Progreso</div>
+        <div class="row-label-sub">diario</div>
+      </div>
+      <div class="row-content" style="padding:6px 10px">
+        <canvas id="d-hchart"></canvas>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Mindset Score</div>
-      <div class="card-body" style="overflow-y:auto">
-        <div class="mindset-list" id="d-mindset"></div>
-      </div>
-    </div>
-  </div>
 
+    <!-- 3. MENTAL STATE -->
+    <div class="dash-row row-mental">
+      <div class="row-label">
+        <div class="row-label-title">Estado Mental</div>
+        <div class="row-label-sub">Mañana · Tarde · Noche</div>
+      </div>
+      <div class="row-content scroll-x" style="padding:6px 10px">
+        <table class="mental-table">
+          <thead id="dm-head"></thead>
+          <tbody id="dm-body"></tbody>
+        </table>
+      </div>
+      <div class="row-analysis">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Mindset</div>
+        <div id="d-mindset" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+
+    <!-- 4. MENTAL CHART -->
+    <div class="dash-row row-mchart">
+      <div class="row-label">
+        <div class="row-label-title">Estado Mental</div>
+        <div class="row-label-sub">evolución</div>
+      </div>
+      <div class="row-content" style="padding:6px 10px;display:flex;flex-direction:column;gap:4px">
+        <canvas id="d-mchart"></canvas>
+        <div style="display:flex;gap:12px;justify-content:center;flex-shrink:0" id="d-mchart-legend"></div>
+      </div>
+    </div>
+
+  </div><!-- /dash-body -->
 </div><!-- /dashboard -->
 
 
-<!-- ═══════════════════════════════════════
-     MOBILE — tab layout, each tab = 100dvh
-═══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════
+     MOBILE — tabs
+══════════════════════════════════════════ -->
 <div id="mobile">
 
-  <!-- TRACKER -->
+  <!-- TRACKER TAB -->
   <div class="m-page active" id="mp-tracker">
-    <div class="m-header">
+    <div class="m-hdr">
       <h1>Habit Tracker</h1>
       <div class="m-right">
-        <button class="action-btn primary" onclick="startExport()" style="padding:5px 9px;font-size:10px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <button class="act-btn primary" onclick="startExport()" style="padding:5px 9px;font-size:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Compartir
         </button>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="mn-btn" id="m-prev">‹</button>
-          <span class="mn-label" id="m-lbl" style="min-width:90px;font-size:11px"></span>
+          <span class="mn-lbl" id="m-lbl" style="min-width:80px;font-size:11px"></span>
           <button class="mn-btn" id="m-next">›</button>
         </div>
       </div>
@@ -475,43 +474,43 @@
       <div class="m-stat"><div class="v" id="ms3">0%</div><div class="l">Mes</div></div>
     </div>
     <div class="m-prog">
-      <div class="m-prog-hdr"><span>Progreso</span><span id="m-ppct">0%</span></div>
+      <span class="m-prog-lbl">Progreso</span>
       <div class="m-prog-track"><div class="m-prog-fill" id="m-pfill" style="width:0%"></div></div>
+      <span class="m-prog-pct" id="m-ppct">0%</span>
     </div>
     <div class="m-sec">Mis Hábitos</div>
-    <div class="m-grid-wrap">
-      <table class="habit-table">
-        <thead id="mh-head"></thead>
-        <tbody id="mh-body"></tbody>
-      </table>
+    <div class="m-scroll">
+      <table class="habit-table"><thead id="mh-head"></thead><tbody id="mh-body"></tbody></table>
     </div>
   </div>
 
-  <!-- ANALYSIS -->
+  <!-- ANALYSIS TAB -->
   <div class="m-page" id="mp-analysis">
-    <div class="m-header">
+    <div class="m-hdr">
       <h1>Análisis</h1>
-      <span style="font-size:11px;font-weight:600;color:var(--muted)" id="m-an-lbl"></span>
+      <span style="font-size:11px;color:var(--muted)" id="m-an-lbl"></span>
     </div>
     <div class="m-chart-wrap">
-      <div class="m-sec" style="margin-bottom:6px">Progreso diario</div>
-      <canvas id="m-chart" height="80"></canvas>
+      <div class="m-sec" style="padding:6px 0 4px">Progreso diario</div>
+      <canvas id="m-hchart" height="80"></canvas>
     </div>
     <div class="m-sec">Por hábito</div>
     <div class="m-analysis" id="m-analysis-list"></div>
     <div class="m-sec">Estado Mental</div>
-    <div class="m-mental-wrap">
-      <table class="mental-table">
-        <thead id="mm-head"></thead>
-        <tbody id="mm-body"></tbody>
-      </table>
+    <div class="m-mental-scroll">
+      <table class="mental-table"><thead id="mm-head"></thead><tbody id="mm-body"></tbody></table>
+    </div>
+    <div class="m-chart-wrap" style="padding-top:0">
+      <div class="m-sec" style="padding:6px 0 4px">Evolución mental</div>
+      <canvas id="m-mchart" height="80"></canvas>
+      <div id="m-mchart-legend" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
     </div>
   </div>
 
-  <!-- SETTINGS -->
+  <!-- SETTINGS TAB -->
   <div class="m-page" id="mp-settings">
-    <div class="m-header"><h1>Configuración</h1></div>
-    <div class="m-settings-body">
+    <div class="m-hdr"><h1>Configuración</h1></div>
+    <div class="m-settings-scroll">
       <div id="hedit-list"></div>
       <button class="add-btn" id="add-btn">+ Agregar hábito</button>
       <div class="info-card">
@@ -525,7 +524,6 @@
     </div>
   </div>
 
-  <!-- Nav -->
   <nav class="m-nav">
     <button class="active" onclick="showTab('tracker')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -542,40 +540,29 @@
   </nav>
 </div>
 
-<!-- Settings modal (desktop) -->
-<div id="settings-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;padding:20px">
-  <div class="modal-box" style="max-width:440px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <h2 style="font-size:15px;font-weight:700">Editar Hábitos</h2>
-      <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
-    </div>
-    <div id="d-hedit-list" style="max-height:55vh;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
-    <button class="add-btn" id="d-add-btn" style="margin-top:10px">+ Agregar hábito</button>
-  </div>
-</div>
-
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const WC = ['#22c55e','#16a34a','#15803d','#166534','#14532d'];
+const WC = ['#22c55e','#16a34a','#15803d','#14532d','#166534'];
 const BC = ['#22c55e','#4ade80','#16a34a','#86efac','#059669','#34d399','#bbf7d0','#6ee7b7','#a7f3d0','#4ade80'];
+const MC_COLORS = ['#22c55e','#86efac','#4ade80']; // Mañana, Tarde, Noche
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
 const CHK = `<svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>`;
 const DEF = [
-  {name:'Early start 🌅',color:'#6366f1'},{name:'Gym 💪',color:'#06b6d4'},
-  {name:'Learn 📚',color:'#10b981'},{name:'Plan top 3 📋',color:'#f59e0b'},
-  {name:'Track money 💰',color:'#ec4899'},{name:'Deep work 🎯',color:'#f87171'},
-  {name:'Alcohol free 🍃',color:'#a78bfa'},{name:'No socials 📵',color:'#2dd4bf'},
-  {name:'Journal ✍️',color:'#fbbf24'},{name:'Cold shower 🚿',color:'#fb923c'},
+  {name:'Early start 🌅',color:'#22c55e'},{name:'Gym 💪',color:'#16a34a'},
+  {name:'Learn 📚',color:'#15803d'},{name:'Plan top 3 📋',color:'#22c55e'},
+  {name:'Track money 💰',color:'#16a34a'},{name:'Deep work 🎯',color:'#4ade80'},
+  {name:'Alcohol free 🍃',color:'#059669'},{name:'No socials 📵',color:'#34d399'},
+  {name:'Journal ✍️',color:'#86efac'},{name:'Cold shower 🚿',color:'#22c55e'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let S = (() => {
-  try { const s=JSON.parse(localStorage.getItem('ht_v2')||'null'); if(s)return s; } catch(e){}
+  try { const s=JSON.parse(localStorage.getItem('ht_v3')||'null'); if(s)return s; } catch(e){}
   return { habits:DEF.map((h,i)=>({id:i+1,...h})), checks:{}, mental:{}, nid:DEF.length+1 };
 })();
-const save = () => localStorage.setItem('ht_v2', JSON.stringify(S));
+const save = () => localStorage.setItem('ht_v3', JSON.stringify(S));
 
 const now = new Date();
 let Y=now.getFullYear(), M=now.getMonth();
@@ -595,7 +582,7 @@ function weeks(y,m) {
   return ws;
 }
 
-function stats(y,m) {
+function calcStats(y,m) {
   const days=dim(y,m); let total=0,done=0,todayD=0,streak=0;
   const [td,tm,ty]=[now.getDate(),now.getMonth(),now.getFullYear()];
   for(let d=1;d<=days;d++){
@@ -603,21 +590,20 @@ function stats(y,m) {
     S.habits.forEach(h=>{total++;const c=!!S.checks[ck(y,m,d,h.id)];if(c){done++;dd++;if(d===td&&m===tm&&y===ty)todayD++;}});
     if(S.habits.length>0&&dd/S.habits.length>=0.5)streak++;
   }
-  return {total,done,todayD,pct:total>0?Math.round(done/total*100):0,streak};
+  return {pct:total>0?Math.round(done/total*100):0,todayD,streak};
 }
 
-// ── MOBILE NAV ────────────────────────────────────────────────────────────
+// ── MOBILE TABS ───────────────────────────────────────────────────────────
 function showTab(id) {
   document.querySelectorAll('.m-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.m-nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('mp-'+id).classList.add('active');
   const idx={tracker:0,analysis:1,settings:2}[id];
   document.querySelectorAll('.m-nav button')[idx].classList.add('active');
-  if(id==='analysis'){renderMobileAnalysis();}
-  if(id==='settings'){renderSettings('hedit-list','add-btn');}
+  if(id==='analysis') renderMobileAnalysis();
+  if(id==='settings') renderSettings('hedit-list','add-btn');
 }
 
-// ── MONTH NAV ─────────────────────────────────────────────────────────────
 document.getElementById('d-prev').onclick=()=>{M--;if(M<0){M=11;Y--;}renderAll();};
 document.getElementById('d-next').onclick=()=>{M++;if(M>11){M=0;Y++;}renderAll();};
 document.getElementById('m-prev').onclick=()=>{M--;if(M<0){M=11;Y--;}renderAll();};
@@ -626,35 +612,31 @@ document.getElementById('m-next').onclick=()=>{M++;if(M>11){M=0;Y++;}renderAll()
 // ── HABIT TABLE ───────────────────────────────────────────────────────────
 function buildHabitTable(headId, bodyId, y, m) {
   const ws=weeks(y,m), first=fdow(y,m);
-
-  let h='<tr><th style="text-align:left;padding-right:6px">Hábito</th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlabel" style="color:${WC[wi]}">S${wi+1}</th>`);
-  h+='<th style="font-size:8px;color:var(--muted)">%</th></tr>';
-
-  let d2='<tr><th></th>';
-  ws.forEach(w=>w.days.forEach(d=>{const dow=(first+d-1)%7;d2+=`<th style="font-size:7px;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;}));
-  d2+='<th></th></tr>';
-  document.getElementById(headId).innerHTML=h+d2;
+  let h='<tr><th style="text-align:left;padding-right:8px">Hábito</th>';
+  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="color:${WC[wi]}">Sem ${wi+1}</th>`);
+  h+='<th style="font-size:8px;color:var(--muted)">%</th></tr><tr><th></th>';
+  ws.forEach(w=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th>${DAYS[dow]}<br>${d}</th>`;}));
+  h+='<th></th></tr>';
+  document.getElementById(headId).innerHTML=h;
 
   let body='';
   S.habits.forEach(hab=>{
     let done=0,tot=0;
-    let row=`<tr class="habit-row"><td>${hab.name}</td>`;
+    let row=`<tr><td>${hab.name}</td>`;
     ws.forEach((w,wi)=>w.days.forEach(d=>{
-      const k=ck(y,m,d,hab.id),c=!!S.checks[k];
-      if(c)done++;tot++;
+      const k=ck(y,m,d,hab.id),c=!!S.checks[k]; if(c)done++;tot++;
       row+=`<td><button class="chk${c?' done':''}" data-key="${k}" data-color="${WC[wi]}"
         style="${c?'background:'+WC[wi]+';border-color:transparent':''}"
         onclick="toggleChk(this)">${CHK}</button></td>`;
     }));
     const p=tot>0?Math.round(done/tot*100):0;
-    row+=`<td style="font-size:9px;font-weight:700;color:${hab.color};padding-left:5px">${p}%</td></tr>`;
+    row+=`<td style="font-size:9px;font-weight:700;color:${hab.color};padding-left:6px">${p}%</td></tr>`;
     body+=row;
   });
   document.getElementById(bodyId).innerHTML=body;
 }
 
-function toggleChk(btn) {
+function toggleChk(btn){
   const k=btn.dataset.key,c=btn.dataset.color;
   S.checks[k]=!S.checks[k];
   if(S.checks[k]){btn.classList.add('done');btn.style.background=c;btn.style.borderColor='transparent';}
@@ -663,10 +645,15 @@ function toggleChk(btn) {
 }
 
 // ── MENTAL TABLE ──────────────────────────────────────────────────────────
-function buildMentalTable(headId,bodyId,y,m) {
+function mentalColor(v){
+  const s=['#333','#2d4a2d','#1e6b1e','#16a34a','#16a34a','#22c55e','#22c55e','#4ade80','#4ade80','#86efac','#bbf7d0'];
+  return s[Math.min(v,s.length-1)];
+}
+
+function buildMentalTable(headId,bodyId,y,m){
   const ws=weeks(y,m),first=fdow(y,m);
   let h='<tr><th></th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" style="color:${WC[wi]}">S${wi+1}</th>`);
+  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" style="color:${WC[wi]}">Sem ${wi+1}</th>`);
   h+='</tr><tr><th></th>';
   ws.forEach(w=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th>${DAYS[dow]}<br>${d}</th>`;}));
   h+='</tr>';
@@ -685,26 +672,21 @@ function buildMentalTable(headId,bodyId,y,m) {
   document.getElementById(bodyId).innerHTML=body;
 }
 
-function mentalColor(v) {
-  // 0–10: gray → green
-  const stops = ['#333','#3d4d3d','#2d5c2d','#1e6b1e','#16a34a','#16a34a','#22c55e','#22c55e','#4ade80','#4ade80','#86efac'];
-  return stops[Math.min(v, stops.length-1)];
-}
 function cycleMental(key,btn){
   const cur=S.mental[key]??null,next=cur===null?0:cur===10?null:cur+1;
   S.mental[key]=next;save();
-  if(next===null){btn.className='sbtn';btn.textContent='·';btn.style.background='';btn.style.borderColor='';}
+  if(next===null){btn.className='sbtn';btn.style.background='';btn.style.borderColor='';btn.textContent='·';}
   else{btn.className='sbtn on';btn.style.background=mentalColor(next);btn.style.borderColor='transparent';btn.textContent=next;}
   renderMindset();
+  requestAnimationFrame(()=>{drawMentalChart('d-mchart',Y,M);drawMentalChart('m-mchart',Y,M);});
 }
 
-// ── CHART ─────────────────────────────────────────────────────────────────
-function drawChart(canvasId,y,m) {
-  const canvas=document.getElementById(canvasId);
-  if(!canvas||!canvas.offsetWidth)return;
+// ── HABITS CHART ──────────────────────────────────────────────────────────
+function drawHabitChart(id,y,m){
+  const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
   const ctx=canvas.getContext('2d');
-  const W=canvas.offsetWidth, H=canvas.parentElement.clientHeight||100;
-  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  const W=canvas.offsetWidth, H=canvas.parentElement.clientHeight-4||100;
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
   ctx.scale(devicePixelRatio,devicePixelRatio);
   ctx.clearRect(0,0,W,H);
 
@@ -715,56 +697,113 @@ function drawChart(canvasId,y,m) {
   }
   if(pcts.length<2)return;
 
-  const pad={t:6,b:16,l:28,r:6};
-  const gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
+  const pad={t:6,b:16,l:28,r:8};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
   const px=i=>pad.l+(i/(days-1))*gW, py=v=>pad.t+gH*(1-v);
 
-  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
-  [0,.5,1].forEach(v=>{
+  [0,.25,.5,.75,1].forEach(v=>{
     const yy=py(v);
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='8px sans-serif';
-    ctx.fillText(Math.round(v*100)+'%',0,yy+3);
+    ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='8px sans-serif';
+    ctx.fillText(Math.round(v*100)+'%',1,yy+3);
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
-  grad.addColorStop(0,'rgba(16,185,129,.35)');grad.addColorStop(1,'rgba(16,185,129,.01)');
-
+  grad.addColorStop(0,'rgba(34,197,94,.3)');grad.addColorStop(1,'rgba(34,197,94,.02)');
   ctx.beginPath();
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.lineTo(px(days-1),H-pad.b);ctx.lineTo(pad.l,H-pad.b);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
 
-  ctx.beginPath();ctx.strokeStyle='#10b981';ctx.lineWidth=1.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#22c55e';ctx.lineWidth=1.5;ctx.lineJoin='round';
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.stroke();
 }
 
-// ── ANALYSIS PANEL ────────────────────────────────────────────────────────
-function renderAnalysisPanel(listId,y,m) {
+// ── MENTAL CHART ──────────────────────────────────────────────────────────
+function drawMentalChart(id,y,m){
+  const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth, H=canvas.parentElement.clientHeight-28||90;
+  canvas.width=W*devicePixelRatio; canvas.height=Math.max(H,40)*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.clearRect(0,0,W,Math.max(H,40));
+
   const days=dim(y,m);
-  let html='';
+  const seriesData=MR.map((_,ri)=>{
+    const pts=[];
+    for(let d=1;d<=days;d++){const v=S.mental[mk(y,m,d,ri)];pts.push(v??null);}
+    return pts;
+  });
+  const hasData=seriesData.some(s=>s.some(v=>v!==null));
+  if(!hasData)return;
+
+  const pad={t:6,b:16,l:28,r:8};
+  const gW=W-pad.l-pad.r, gH=Math.max(H,40)-pad.t-pad.b;
+  const px=i=>pad.l+(i/(days-1||1))*gW;
+  const py=v=>pad.t+gH*(1-v/10);
+
+  [0,5,10].forEach(v=>{
+    const yy=py(v);
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='8px sans-serif';
+    ctx.fillText(v,1,yy+3);
+  });
+
+  seriesData.forEach((pts,ri)=>{
+    const color=MC_COLORS[ri];
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.lineJoin='round';
+    let started=false;
+    pts.forEach((v,i)=>{
+      if(v===null){started=false;return;}
+      if(!started){ctx.moveTo(px(i),py(v));started=true;}
+      else ctx.lineTo(px(i),py(v));
+    });
+    ctx.stroke();
+    // dots
+    pts.forEach((v,i)=>{
+      if(v===null)return;
+      ctx.beginPath();ctx.arc(px(i),py(v),2,0,Math.PI*2);
+      ctx.fillStyle=color;ctx.fill();
+    });
+  });
+
+  // legend
+  const legendId=id==='d-mchart'?'d-mchart-legend':'m-mchart-legend';
+  const leg=document.getElementById(legendId);
+  if(leg){
+    leg.innerHTML=MR.map((r,i)=>`<span style="display:flex;align-items:center;gap:4px">
+      <span style="width:10px;height:2px;background:${MC_COLORS[i]};display:inline-block;border-radius:2px"></span>
+      <span style="font-size:9px;color:var(--muted)">${r}</span>
+    </span>`).join('');
+  }
+}
+
+// ── ANALYSIS ─────────────────────────────────────────────────────────────
+function renderAnalysisPanel(listId,y,m){
+  const days=dim(y,m); let html='';
   S.habits.forEach((h,i)=>{
     let done=0;for(let d=1;d<=days;d++)if(S.checks[ck(y,m,d,h.id)])done++;
     const p=Math.round(done/days*100),c=h.color||BC[i%BC.length];
     html+=`<div class="a-item">
-      <div class="a-row"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px">${h.name}</span><span class="a-pct">${p}%</span></div>
+      <div class="a-row"><span class="a-name">${h.name}</span><span class="a-pct">${p}%</span></div>
       <div class="a-track"><div class="a-fill" style="width:${p}%;background:${c}"></div></div>
     </div>`;
   });
   document.getElementById(listId).innerHTML=html;
 }
 
-// ── MINDSET SCORES ────────────────────────────────────────────────────────
-function renderMindset() {
-  const ws=weeks(Y,M);
-  let html='';
+// ── MINDSET ───────────────────────────────────────────────────────────────
+function renderMindset(){
+  const ws=weeks(Y,M); let html='';
   ws.forEach((w,wi)=>{
     let sc=[];
     w.days.forEach(d=>MR.forEach((_,ri)=>{const v=S.mental[mk(Y,M,d,ri)];if(v!=null)sc.push(v/10*100);}));
     const avg=sc.length>0?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;
-    html+=`<div class="ms-row">
-      <div class="ms-hdr"><span style="color:${WC[wi]}">Sem ${wi+1}</span><span class="ms-pct">${avg}%</span></div>
+    html+=`<div class="ms-item">
+      <div class="ms-row"><span style="color:${WC[wi]};font-size:9px">Sem ${wi+1}</span><span class="ms-pct">${avg}%</span></div>
       <div class="a-track"><div class="a-fill" style="width:${avg}%;background:${WC[wi]}"></div></div>
     </div>`;
   });
@@ -772,25 +811,24 @@ function renderMindset() {
 }
 
 // ── STATS ─────────────────────────────────────────────────────────────────
-function renderStats() {
-  const {todayD,pct,streak}=stats(Y,M);
-  // desktop
+function renderStats(){
+  const {pct,todayD,streak}=calcStats(Y,M);
   document.getElementById('d-s1').textContent=S.habits.length;
   document.getElementById('d-s2').textContent=todayD;
-  document.getElementById('d-s3').textContent=pct+'%';
-  document.getElementById('d-s4').textContent=streak;
+  document.getElementById('d-s3').textContent=streak;
   document.getElementById('d-pfill').style.width=pct+'%';
   document.getElementById('d-ppct').textContent=pct+'%';
-  // mobile
   document.getElementById('ms1').textContent=S.habits.length;
   document.getElementById('ms2').textContent=todayD;
   document.getElementById('ms3').textContent=pct+'%';
-  document.getElementById('m-ppct').textContent=pct+'%';
   document.getElementById('m-pfill').style.width=pct+'%';
+  document.getElementById('m-ppct').textContent=pct+'%';
+  const el=document.getElementById('d-hab-sub');
+  if(el)el.textContent=`${pct}% completado`;
 }
 
 // ── MOBILE ANALYSIS ───────────────────────────────────────────────────────
-function renderMobileAnalysis() {
+function renderMobileAnalysis(){
   const days=dim(Y,M);
   document.getElementById('m-an-lbl').textContent=`${MONTHS[M]} ${Y}`;
   let html='';
@@ -803,12 +841,12 @@ function renderMobileAnalysis() {
     </div>`;
   });
   document.getElementById('m-analysis-list').innerHTML=html;
-  requestAnimationFrame(()=>drawChart('m-chart',Y,M));
   buildMentalTable('mm-head','mm-body',Y,M);
+  requestAnimationFrame(()=>{drawHabitChart('m-hchart',Y,M);drawMentalChart('m-mchart',Y,M);});
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────────────────
-function renderSettings(listId, addId) {
+function renderSettings(listId,addId){
   let html='';
   S.habits.forEach(h=>{
     html+=`<div class="hedit">
@@ -825,40 +863,37 @@ function renderSettings(listId, addId) {
   document.getElementById(listId).innerHTML=html;
   document.getElementById(addId).onclick=addHabit;
 }
-function openSettings(){document.getElementById('settings-modal').style.display='flex';renderSettings('d-hedit-list','d-add-btn');}
-function closeSettings(){document.getElementById('settings-modal').style.display='none';}
+function openSettings(){document.getElementById('settings-modal').classList.add('show');renderSettings('d-hedit-list','d-add-btn');}
+function closeSettings(){document.getElementById('settings-modal').classList.remove('show');}
 document.getElementById('settings-modal').onclick=e=>{if(e.target===e.currentTarget)closeSettings();};
 
 function updateName(id,v){const h=S.habits.find(h=>h.id===id);if(h){h.name=v;save();renderAll();}}
 function updateColor(id,v){const h=S.habits.find(h=>h.id===id);if(h){h.color=v;save();renderAll();}}
 function delHabit(id){
   if(!confirm('¿Eliminar?'))return;
-  S.habits=S.habits.filter(h=>h.id!==id);save();
-  renderAll();
-  renderSettings('hedit-list','add-btn');
-  renderSettings('d-hedit-list','d-add-btn');
+  S.habits=S.habits.filter(h=>h.id!==id);save();renderAll();
+  renderSettings('hedit-list','add-btn');renderSettings('d-hedit-list','d-add-btn');
 }
 function addHabit(){
   const n=prompt('Nombre del hábito:');if(!n||!n.trim())return;
   S.habits.push({id:S.nid++,name:n.trim(),color:BC[S.habits.length%BC.length]});
   save();renderAll();
-  renderSettings('hedit-list','add-btn');
-  renderSettings('d-hedit-list','d-add-btn');
+  renderSettings('hedit-list','add-btn');renderSettings('d-hedit-list','d-add-btn');
 }
 
 // ── EXPORT ────────────────────────────────────────────────────────────────
 function startExport(){
-  const y=Y,m=M,days=dim(y,m),ws=weeks(y,m),{pct}=stats(y,m);
+  const y=Y,m=M,days=dim(y,m),ws=weeks(y,m),{pct}=calcStats(y,m);
   let rows='';
   S.habits.forEach(h=>{
     let done=0,cells='';
     ws.forEach((w,wi)=>w.days.forEach(d=>{
       const c=!!S.checks[ck(y,m,d,h.id)];if(c)done++;
-      cells+=`<div style="width:12px;height:12px;border-radius:3px;background:${c?WC[wi]:'#1e293b'};border:1px solid #334155;display:inline-block;margin:1px"></div>`;
+      cells+=`<div style="width:12px;height:12px;border-radius:3px;background:${c?WC[wi]:'#1a1a1a'};border:1px solid #2a2a2a;display:inline-block;margin:1px"></div>`;
     }));
     const p=Math.round(done/days*100);
     rows+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-      <span style="width:140px;font-size:10px;color:#f1f5f9;flex-shrink:0">${h.name}</span>
+      <span style="width:140px;font-size:10px;color:#f0f0f0;flex-shrink:0">${h.name}</span>
       <div style="display:flex;flex-wrap:wrap;gap:1px;flex:1">${cells}</div>
       <span style="width:30px;text-align:right;font-size:10px;font-weight:700;color:${h.color}">${p}%</span>
     </div>`;
@@ -866,19 +901,19 @@ function startExport(){
   document.getElementById('share-card').innerHTML=`
     <div style="background:#080808;padding:28px;border-radius:14px;width:720px;font-family:-apple-system,sans-serif">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div><div style="font-size:18px;font-weight:800;color:#f1f5f9">${MONTHS[m]} ${y}</div>
-        <div style="font-size:10px;color:#94a3b8;margin-top:2px">Habit Tracker</div></div>
-        <div style="text-align:right"><div style="font-size:30px;font-weight:800;color:#22d3ee">${pct}%</div>
-        <div style="font-size:10px;color:#94a3b8">progreso</div></div>
+        <div><div style="font-size:18px;font-weight:800;color:#f0f0f0">${MONTHS[m]} ${y}</div>
+        <div style="font-size:10px;color:#555;margin-top:2px">Habit Tracker</div></div>
+        <div style="text-align:right"><div style="font-size:30px;font-weight:800;color:#22c55e">${pct}%</div>
+        <div style="font-size:10px;color:#555">progreso</div></div>
       </div>
-      <div style="background:#1a1a1a;border-radius:999px;height:6px;margin-bottom:18px">
-        <div style="width:${pct}%;height:6px;border-radius:999px;background:linear-gradient(90deg,#059669,#10b981)"></div>
+      <div style="background:#1a1a1a;border-radius:999px;height:5px;margin-bottom:18px">
+        <div style="width:${pct}%;height:5px;border-radius:999px;background:linear-gradient(90deg,#16a34a,#22c55e)"></div>
       </div>
       ${rows}
-      <div style="margin-top:16px;font-size:9px;color:#475569;text-align:center">✦ habit tracker</div>
+      <div style="margin-top:16px;font-size:9px;color:#333;text-align:center">✦ habit tracker</div>
     </div>`;
-  if(typeof html2canvas==='undefined'){alert('Necesitas conexión a internet la primera vez.');return;}
-  html2canvas(document.getElementById('share-card').firstElementChild,{backgroundColor:'#0f172a',scale:2,useCORS:true}).then(c=>{
+  if(typeof html2canvas==='undefined'){alert('Necesitas conexión la primera vez.');return;}
+  html2canvas(document.getElementById('share-card').firstElementChild,{backgroundColor:'#080808',scale:2,useCORS:true}).then(c=>{
     const url=c.toDataURL('image/png');
     document.getElementById('export-preview').src=url;
     document.getElementById('export-modal').classList.add('show');
@@ -897,23 +932,27 @@ document.getElementById('btn-dismiss').onclick=()=>{banner.classList.remove('sho
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────
-function renderAll() {
+function renderAll(){
   const lbl=`${MONTHS[M]} ${Y}`;
-  document.getElementById('d-month-lbl').textContent=lbl;
-  document.getElementById('d-nav-lbl').textContent=lbl;
+  document.getElementById('d-lbl').textContent=lbl;
   document.getElementById('m-lbl').textContent=`${MONTHS[M].slice(0,3)} ${Y}`;
-
   buildHabitTable('dh-head','dh-body',Y,M);
   buildHabitTable('mh-head','mh-body',Y,M);
   buildMentalTable('dm-head','dm-body',Y,M);
   renderAnalysisPanel('d-analysis',Y,M);
   renderMindset();
   renderStats();
-  requestAnimationFrame(()=>drawChart('d-chart',Y,M));
+  requestAnimationFrame(()=>{
+    drawHabitChart('d-hchart',Y,M);
+    drawMentalChart('d-mchart',Y,M);
+  });
 }
 
 renderAll();
-window.addEventListener('resize',()=>requestAnimationFrame(()=>{drawChart('d-chart',Y,M);drawChart('m-chart',Y,M);}));
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{
+  drawHabitChart('d-hchart',Y,M);drawMentalChart('d-mchart',Y,M);
+  drawHabitChart('m-hchart',Y,M);drawMentalChart('m-mchart',Y,M);
+}));
 </script>
 </body>
 </html>
