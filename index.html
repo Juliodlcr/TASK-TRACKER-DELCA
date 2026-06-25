@@ -116,25 +116,33 @@
     .row-mchart   { flex: 1.8; }
 
     /* ── HABIT TABLE ── */
-    .habit-table { border-collapse: collapse; }
+    .habit-table { border-collapse: separate; border-spacing: 0; }
     .habit-table th {
-      font-size: 8px; color: var(--muted);
-      padding: 2px 4px; text-align: center; white-space: nowrap;
+      font-size: 9px; color: var(--muted);
+      padding: 3px 5px; text-align: center; white-space: nowrap;
     }
-    .habit-table td { padding: 1px 3px; text-align: center; }
+    .habit-table td { padding: 3px 4px; text-align: center; }
     .habit-row td:first-child {
-      text-align: left; padding-right: 10px;
-      font-size: 10px; white-space: nowrap; color: var(--text);
+      text-align: left; padding-right: 16px;
+      font-size: 11px; white-space: nowrap; color: var(--text);
+      font-weight: 500;
     }
-    .wlbl { font-size: 9px; font-weight: 700; padding: 0 4px; }
+    /* week header — solid color block */
+    .wlbl {
+      font-size: 10px; font-weight: 700; padding: 6px 6px;
+      border-radius: 6px 6px 0 0;
+      color: #fff !important;
+    }
+    /* day header tinted per week */
+    .day-th { font-size: 8px; padding: 3px 5px; }
 
     .chk {
-      width: 18px; height: 18px; border-radius: 4px;
-      border: 1px solid var(--border); background: none; cursor: pointer;
+      width: 24px; height: 24px; border-radius: 6px;
+      border: 1.5px solid var(--border); background: none; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
-      transition: all .1s;
+      transition: all .12s;
     }
-    .chk svg { display: none; width: 11px; height: 11px; }
+    .chk svg { display: none; width: 14px; height: 14px; }
     .chk.done { border-color: transparent; }
     .chk.done svg { display: block; }
 
@@ -534,8 +542,8 @@
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const WC = ['#22c55e','#16a34a','#15803d','#14532d','#166534'];
-const BC = ['#22c55e','#4ade80','#16a34a','#86efac','#059669','#34d399','#bbf7d0','#6ee7b7','#a7f3d0','#4ade80'];
+const WC = ['#7c3aed','#0891b2','#db2777','#d97706','#16a34a'];
+const BC = ['#a78bfa','#22d3ee','#f472b6','#fbbf24','#4ade80','#818cf8','#34d399','#fb923c','#60a5fa','#e879f9'];
 const MC_COLORS = ['#22c55e','#38bdf8','#f472b6']; // Mañana=verde, Tarde=azul, Noche=rosa
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -605,9 +613,9 @@ document.getElementById('m-next').onclick=()=>{M++;if(M>11){M=0;Y++;}renderAll()
 function buildHabitTable(headId, bodyId, y, m) {
   const ws=weeks(y,m), first=fdow(y,m);
   let h='<tr><th style="text-align:left;padding-right:8px">Hábito</th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="color:${WC[wi]}">Sem ${wi+1}</th>`);
+  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${WC[wi]};color:#fff">Sem ${wi+1}</th>`);
   h+='<th style="font-size:8px;color:var(--muted)">%</th></tr><tr><th></th>';
-  ws.forEach(w=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th>${DAYS[dow]}<br>${d}</th>`;}));
+  ws.forEach((w,wi)=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th class="day-th" style="background:${WC[wi]}18;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;}));
   h+='<th></th></tr>';
   document.getElementById(headId).innerHTML=h;
 
@@ -645,9 +653,9 @@ function mentalColor(v){
 function buildMentalTable(headId,bodyId,y,m){
   const ws=weeks(y,m),first=fdow(y,m);
   let h='<tr><th></th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" style="color:${WC[wi]}">Sem ${wi+1}</th>`);
+  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${WC[wi]};color:#fff">Sem ${wi+1}</th>`);
   h+='</tr><tr><th></th>';
-  ws.forEach(w=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th>${DAYS[dow]}<br>${d}</th>`;}));
+  ws.forEach((w,wi)=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th class="day-th" style="background:${WC[wi]}18;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;}));
   h+='</tr>';
   document.getElementById(headId).innerHTML=h;
 
