@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Habit Tracker" />
+  <title>Habit Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #273449;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #22d3ee;
+      --green: #4ade80;
+      --pink: #f472b6;
+      --purple: #a78bfa;
+      --teal: #2dd4bf;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+      --red: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      min-height: 100dvh;
+      padding-bottom: 80px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
+    }
+    nav button {
+      flex: 1;
+      padding: 12px 4px 8px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: color .2s;
+    }
+    nav button.active { color: var(--accent); }
+    nav button svg { width: 22px; height: 22px; }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 16px; }
+    .page.active { display: block; }
+
+    /* ── HEADER ── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .page-header h1 { font-size: 22px; font-weight: 700; }
+    .month-nav { display: flex; align-items: center; gap: 12px; }
+    .month-nav button {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .month-label { font-size: 15px; font-weight: 600; min-width: 100px; text-align: center; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-card .val { font-size: 20px; font-weight: 700; color: var(--accent); }
+    .stat-card .lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap { margin-bottom: 20px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .progress-track { background: var(--surface2); border-radius: 999px; height: 10px; }
+    .progress-fill { height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--teal), var(--accent)); transition: width .4s; }
+
+    /* ── HABIT GRID ── */
+    .section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
+
+    .habit-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .habit-table { border-collapse: collapse; min-width: 100%; }
+    .habit-table th {
+      font-size: 10px;
+      color: var(--text-muted);
+      padding: 4px 6px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .habit-name-col { text-align: left !important; padding-left: 0 !important; font-size: 12px; color: var(--text); white-space: nowrap; }
+    .habit-table td { padding: 3px 4px; text-align: center; }
+    .habit-row td:first-child { text-align: left; padding-right: 12px; font-size: 12px; white-space: nowrap; }
+
+    .check-cell {
+      width: 28px; height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check-btn {
+      width: 22px; height: 22px;
+      border-radius: 5px;
+      border: 1.5px solid var(--border);
+      background: none;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check-btn.done {
+      border-color: transparent;
+    }
+    .check-btn svg { display: none; width: 14px; height: 14px; }
+    .check-btn.done svg { display: block; }
+
+    /* week colors */
+    .w1 .check-btn.done { background: #6366f1; }
+    .w2 .check-btn.done { background: #06b6d4; }
+    .w3 .check-btn.done { background: #10b981; }
+    .w4 .check-btn.done { background: #f59e0b; }
+    .w5 .check-btn.done { background: #ec4899; }
+
+    .week-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 0 8px;
+    }
+
+    /* ── ANALYSIS ── */
+    .analysis-list { display: flex; flex-direction: column; gap: 10px; }
+    .analysis-item { display: flex; flex-direction: column; gap: 4px; }
+    .analysis-header { display: flex; justify-content: space-between; font-size: 13px; }
+    .analysis-pct { font-weight: 700; color: var(--accent); }
+    .analysis-bar-track { background: var(--surface2); border-radius: 999px; height: 8px; }
+    .analysis-bar-fill { height: 8px; border-radius: 999px; transition: width .4s; }
+
+    /* ── MENTAL STATE ── */
+    .mental-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .mental-table { border-collapse: collapse; }
+    .mental-table th { font-size: 10px; color: var(--text-muted); padding: 4px 6px; text-align: center; }
+    .mental-table td { padding: 4px 6px; text-align: center; }
+    .mental-table td:first-child { text-align: left; font-size: 12px; padding-right: 12px; white-space: nowrap; }
+    .score-btn {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: none;
+      color: var(--text);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .score-btn.active { border-color: transparent; color: #fff; font-weight: 700; }
+    .score-0.active { background: #ef4444; }
+    .score-1.active { background: #f97316; }
+    .score-2.active { background: #eab308; }
+    .score-3.active { background: #84cc16; }
+    .score-4.active { background: #22c55e; }
+
+    /* ── CHART ── */
+    .chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    canvas { width: 100% !important; display: block; }
+
+    /* ── SETTINGS ── */
+    .settings-section { margin-bottom: 24px; }
+    .settings-section h2 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .habit-item-edit {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .habit-item-edit input[type="text"] {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .emoji-pick {
+      font-size: 18px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+    }
+    .icon-btn:hover { color: var(--red); }
+    .add-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--surface);
+      border: 1.5px dashed var(--border);
+      color: var(--accent);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .add-btn:hover { background: var(--surface2); }
+
+    .color-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .color-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .color-dot.selected { border-color: white; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+    /* ── INSTALL BANNER ── */
+    #install-banner {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      z-index: 200;
+      align-items: center;
+      gap: 12px;
+    }
+    #install-banner.show { display: flex; }
+    #install-banner p { flex: 1; font-size: 13px; }
+    #install-banner button { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; }
+    #btn-install { background: var(--accent); color: #000; }
+    #btn-dismiss { background: var(--surface2); color: var(--text); }
+
+    .mt-12 { margin-top: 12px; }
+    .mt-20 { margin-top: 20px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- Install Banner -->
+<div id="install-banner">
+  <p>📲 Instala esta app en tu teléfono para usarla offline</p>
+  <button id="btn-install">Instalar</button>
+  <button id="btn-dismiss">✕</button>
+</div>
+
+<!-- PAGE: TRACKER -->
+<div id="page-tracker" class="page active">
+  <div class="page-header">
+    <h1>Habit Tracker</h1>
+    <div class="month-nav">
+      <button id="prev-month">‹</button>
+      <span class="month-label" id="month-label"></span>
+      <button id="next-month">›</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="val" id="stat-habits">0</div>
+      <div class="lbl">Hábitos</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="stat-done">0</div>
+      <div class="lbl">Completados</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="stat-pct">0%</div>
+      <div class="lbl">Progreso</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span>Progreso del mes</span>
+      <span id="progress-label">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="section-title">Mis Hábitos</div>
+  <div class="habit-grid">
+    <table class="habit-table" id="habit-table">
+      <thead id="habit-thead"></thead>
+      <tbody id="habit-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PAGE: ANALYSIS -->
+<div id="page-analysis" class="page">
+  <div class="page-header">
+    <h1>Análisis</h1>
+    <span class="month-label" id="analysis-month-label"></span>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="section-title">Progreso diario</div>
+    <canvas id="chart-progress" height="120"></canvas>
+  </div>
+
+  <div class="section-title">Por hábito</div>
+  <div class="analysis-list" id="analysis-list"></div>
+
+  <div class="mt-20 section-title">Estado Mental</div>
+  <div class="mental-grid mt-12">
+    <table class="mental-table" id="mental-table">
+      <thead id="mental-thead"></thead>
+      <tbody id="mental-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PAGE: SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="page-header">
+    <h1>Configuración</h1>
+  </div>
+
+  <div class="settings-section">
+    <h2>Mis hábitos</h2>
+    <div id="habits-edit-list"></div>
+    <button class="add-btn" id="add-habit-btn">+ Agregar hábito</button>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="settings-section">
+    <h2>Acerca de</h2>
+    <div class="card">
+      <p style="font-size:13px; color:var(--text-muted); line-height:1.6">
+        <strong style="color:var(--text)">Habit Tracker PWA</strong><br>
+        Funciona 100% offline. Todos los datos se guardan en tu dispositivo.<br><br>
+        Para instalar en iOS: Safari → Compartir → Agregar a pantalla de inicio.<br>
+        Para instalar en Android: Chrome → Menú → Instalar app.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav>
+  <button class="active" data-page="tracker" onclick="showPage('tracker')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Tracker
+  </button>
+  <button data-page="analysis" onclick="showPage('analysis')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Análisis
+  </button>
+  <button data-page="settings" onclick="showPage('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Config
+  </button>
+</nav>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const WEEK_COLORS = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ec4899'];
+const BAR_COLORS  = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ec4899','#f87171','#a78bfa','#2dd4bf','#fbbf24','#fb923c'];
+const DAYS = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MENTAL_ROWS = ['Mood','Meditación','Score'];
+const CHECK_SVG = `<svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>`;
+
+const DEFAULT_HABITS = [
+  {name:'Early start 🌅', color:'#6366f1'},
+  {name:'Gym 💪',         color:'#06b6d4'},
+  {name:'Learn something 📚', color:'#10b981'},
+  {name:'Plan top 3 📋',  color:'#f59e0b'},
+  {name:'Track money 💰', color:'#ec4899'},
+  {name:'Deep work 🎯',   color:'#f87171'},
+  {name:'Alcohol free 🍃',color:'#a78bfa'},
+  {name:'No socials 📵',  color:'#2dd4bf'},
+  {name:'Journal ✍️',     color:'#fbbf24'},
+  {name:'Cold shower 🚿', color:'#fb923c'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let state = loadState();
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('habit_tracker_v1') || 'null');
+    if (s) return s;
+  } catch(e) {}
+  return {
+    habits: DEFAULT_HABITS.map((h,i) => ({id: i+1, ...h})),
+    checks: {},   // "YYYY-MM-DD_habitId" => true
+    mental: {},   // "YYYY-MM-DD_row" => 0-4
+    nextId: DEFAULT_HABITS.length + 1,
+  };
+}
+
+function saveState() {
+  localStorage.setItem('habit_tracker_v1', JSON.stringify(state));
+}
+
+// ── CURRENT MONTH ─────────────────────────────────────────────────────────
+const today = new Date();
+let curYear = today.getFullYear();
+let curMonth = today.getMonth(); // 0-indexed
+
+function daysInMonth(y, m) { return new Date(y, m+1, 0).getDate(); }
+function firstDayOfMonth(y, m) {
+  const d = new Date(y, m, 1).getDay();
+  return d === 0 ? 6 : d - 1; // Mon=0
+}
+
+function getWeekOfDay(day, y, m) {
+  const first = firstDayOfMonth(y, m);
+  return Math.floor((first + day - 1) / 7); // 0-indexed
+}
+
+function dateKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function checkKey(y, m, d, habitId) { return `${dateKey(y,m,d)}_${habitId}`; }
+function mentalKey(y, m, d, row)    { return `${dateKey(y,m,d)}_${row}`; }
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector(`nav button[data-page="${id}"]`).classList.add('active');
+  if (id === 'analysis') renderAnalysis();
+  if (id === 'settings') renderSettings();
+}
+
+document.getElementById('prev-month').onclick = () => {
+  curMonth--; if (curMonth < 0) { curMonth = 11; curYear--; }
+  renderTracker();
+};
+document.getElementById('next-month').onclick = () => {
+  curMonth++; if (curMonth > 11) { curMonth = 0; curYear++; }
+  renderTracker();
+};
+
+// ── TRACKER ───────────────────────────────────────────────────────────────
+function renderTracker() {
+  const y = curYear, m = curMonth;
+  const days = daysInMonth(y, m);
+  const first = firstDayOfMonth(y, m);
+  document.getElementById('month-label').textContent = `${MONTHS[m]} ${y}`;
+
+  // Build week structure: array of {week, days:[1..31]}
+  const weeks = [];
+  for (let d = 1; d <= days; d++) {
+    const w = getWeekOfDay(d, y, m);
+    if (!weeks[w]) weeks[w] = {week: w, days: []};
+    weeks[w].days.push(d);
+  }
+
+  // Build header
+  const thead = document.getElementById('habit-thead');
+  thead.innerHTML = '';
+  let hRow = '<tr><th class="habit-name-col">Hábito</th>';
+  weeks.forEach((wk, wi) => {
+    hRow += `<th colspan="${wk.days.length}" class="week-label" style="color:${WEEK_COLORS[wi]}">Sem ${wi+1}</th>`;
+  });
+  hRow += '<th style="font-size:10px;color:var(--text-muted)">%</th></tr>';
+
+  let dRow = '<tr><th></th>';
+  weeks.forEach(wk => {
+    wk.days.forEach(d => {
+      const dow = (first + d - 1) % 7;
+      dRow += `<th style="font-size:9px;color:var(--text-muted)">${DAYS[dow]}<br>${d}</th>`;
+    });
+  });
+  dRow += '<th></th></tr>';
+  thead.innerHTML = hRow + dRow;
+
+  // Build body
+  const tbody = document.getElementById('habit-tbody');
+  tbody.innerHTML = '';
+
+  state.habits.forEach(habit => {
+    let done = 0, total = 0;
+    let row = `<tr class="habit-row"><td>${habit.name}</td>`;
+    weeks.forEach((wk, wi) => {
+      wk.days.forEach(d => {
+        const k = checkKey(y, m, d, habit.id);
+        const checked = !!state.checks[k];
+        if (checked) done++;
+        total++;
+        row += `<td><div class="check-cell w${wi+1}">
+          <button class="check-btn${checked?' done':''}"
+                  data-key="${k}"
+                  style="${checked?'background:'+WEEK_COLORS[wi]+';border-color:transparent':''}"
+                  onclick="toggleCheck('${k}', this, '${WEEK_COLORS[wi]}')">
+            ${CHECK_SVG}
+          </button>
+        </div></td>`;
+      });
+    });
+    const pct = total > 0 ? Math.round(done/total*100) : 0;
+    row += `<td style="font-size:11px;font-weight:700;color:${habit.color}">${pct}%</td>`;
+    row += '</tr>';
+    tbody.innerHTML += row;
+  });
+
+  updateStats();
+}
+
+function toggleCheck(key, btn, color) {
+  state.checks[key] = !state.checks[key];
+  if (state.checks[key]) {
+    btn.classList.add('done');
+    btn.style.background = color;
+    btn.style.borderColor = 'transparent';
+  } else {
+    btn.classList.remove('done');
+    btn.style.background = '';
+    btn.style.borderColor = '';
+  }
+  saveState();
+  updateStats();
+}
+
+function updateStats() {
+  const y = curYear, m = curMonth;
+  const days = daysInMonth(y, m);
+  let total = 0, done = 0;
+  for (let d = 1; d <= days; d++) {
+    state.habits.forEach(h => {
+      total++;
+      if (state.checks[checkKey(y,m,d,h.id)]) done++;
+    });
+  }
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+  document.getElementById('stat-habits').textContent = state.habits.length;
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-pct').textContent = pct+'%';
+  document.getElementById('progress-label').textContent = pct+'%';
+  document.getElementById('progress-fill').style.width = pct+'%';
+}
+
+// ── ANALYSIS ──────────────────────────────────────────────────────────────
+function renderAnalysis() {
+  const y = curYear, m = curMonth;
+  const days = daysInMonth(y, m);
+  document.getElementById('analysis-month-label').textContent = `${MONTHS[m]} ${y}`;
+
+  // Per-habit percentages
+  const list = document.getElementById('analysis-list');
+  list.innerHTML = '';
+  state.habits.forEach((h, i) => {
+    let done = 0;
+    for (let d = 1; d <= days; d++) if (state.checks[checkKey(y,m,d,h.id)]) done++;
+    const pct = Math.round(done/days*100);
+    const color = h.color || BAR_COLORS[i % BAR_COLORS.length];
+    list.innerHTML += `
+      <div class="analysis-item">
+        <div class="analysis-header"><span>${h.name}</span><span class="analysis-pct">${pct}%</span></div>
+        <div class="analysis-bar-track">
+          <div class="analysis-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+      </div>`;
+  });
+
+  // Line chart
+  drawChart(y, m, days);
+
+  // Mental state table
+  renderMentalTable(y, m, days);
+}
+
+function drawChart(y, m, days) {
+  const canvas = document.getElementById('chart-progress');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 320;
+  const H = 120;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  ctx.clearRect(0,0,W,H);
+
+  const pcts = [];
+  for (let d = 1; d <= days; d++) {
+    let done = 0;
+    state.habits.forEach(h => { if (state.checks[checkKey(y,m,d,h.id)]) done++; });
+    pcts.push(state.habits.length > 0 ? done/state.habits.length : 0);
+  }
+
+  const pad = {t:10,b:20,l:30,r:10};
+  const gW = W - pad.l - pad.r;
+  const gH = H - pad.t - pad.b;
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,.07)';
+  ctx.lineWidth = 1;
+  [0,.25,.5,.75,1].forEach(v => {
+    const yy = pad.t + gH * (1-v);
+    ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(W-pad.r, yy); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.3)';
+    ctx.font = '9px sans-serif';
+    ctx.fillText(Math.round(v*100)+'%', 0, yy+3);
+  });
+
+  // Fill
+  const grad = ctx.createLinearGradient(0, pad.t, 0, H-pad.b);
+  grad.addColorStop(0, 'rgba(34,211,238,.4)');
+  grad.addColorStop(1, 'rgba(34,211,238,.02)');
+
+  ctx.beginPath();
+  pcts.forEach((v, i) => {
+    const x = pad.l + (i/(days-1||1))*gW;
+    const yy = pad.t + gH*(1-v);
+    i===0 ? ctx.moveTo(x,yy) : ctx.lineTo(x,yy);
+  });
+  ctx.lineTo(pad.l+gW, H-pad.b);
+  ctx.lineTo(pad.l, H-pad.b);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle = '#22d3ee';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  pcts.forEach((v, i) => {
+    const x = pad.l + (i/(days-1||1))*gW;
+    const yy = pad.t + gH*(1-v);
+    i===0 ? ctx.moveTo(x,yy) : ctx.lineTo(x,yy);
+  });
+  ctx.stroke();
+}
+
+function renderMentalTable(y, m, days) {
+  // Build week structure
+  const first = firstDayOfMonth(y, m);
+  const weeks = [];
+  for (let d = 1; d <= days; d++) {
+    const w = getWeekOfDay(d, y, m);
+    if (!weeks[w]) weeks[w] = {week: w, days: []};
+    weeks[w].days.push(d);
+  }
+
+  const thead = document.getElementById('mental-thead');
+  const tbody = document.getElementById('mental-tbody');
+
+  let hRow = '<tr><th></th>';
+  weeks.forEach((wk, wi) => {
+    hRow += `<th colspan="${wk.days.length}" style="color:${WEEK_COLORS[wi]};font-size:10px">Sem ${wi+1}</th>`;
+  });
+  hRow += '</tr><tr><th></th>';
+  weeks.forEach(wk => {
+    wk.days.forEach(d => {
+      const dow = (first + d - 1) % 7;
+      hRow += `<th>${DAYS[dow]}<br>${d}</th>`;
+    });
+  });
+  hRow += '</tr>';
+  thead.innerHTML = hRow;
+
+  tbody.innerHTML = '';
+  MENTAL_ROWS.forEach((rowName, ri) => {
+    let row = `<tr><td>${rowName}</td>`;
+    weeks.forEach(wk => {
+      wk.days.forEach(d => {
+        const k = mentalKey(y,m,d,ri);
+        const val = state.mental[k] ?? null;
+        row += `<td><button class="score-btn score-${val===null?'':val} ${val!==null?'active':''}"
+                  onclick="cycleMental('${k}', this)">${val!==null ? val : '·'}</button></td>`;
+      });
+    });
+    row += '</tr>';
+    tbody.innerHTML += row;
+  });
+}
+
+function cycleMental(key, btn) {
+  const cur = state.mental[key] ?? null;
+  const next = cur === null ? 0 : cur === 4 ? null : cur + 1;
+  state.mental[key] = next;
+  saveState();
+  if (next === null) {
+    btn.className = 'score-btn';
+    btn.textContent = '·';
+  } else {
+    btn.className = `score-btn score-${next} active`;
+    btn.textContent = next;
+  }
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────
+function renderSettings() {
+  const el = document.getElementById('habits-edit-list');
+  el.innerHTML = '';
+  state.habits.forEach((h, i) => {
+    el.innerHTML += `
+      <div class="habit-item-edit" data-id="${h.id}">
+        <input type="text" value="${escHtml(h.name)}"
+               onchange="updateHabitName(${h.id}, this.value)" />
+        <input type="color" value="${h.color}" style="width:28px;height:28px;border:none;background:none;cursor:pointer;padding:0"
+               onchange="updateHabitColor(${h.id}, this.value)" title="Color" />
+        <button class="icon-btn" onclick="deleteHabit(${h.id})" title="Eliminar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+      </div>`;
+  });
+}
+
+function updateHabitName(id, val) {
+  const h = state.habits.find(h => h.id === id);
+  if (h) { h.name = val; saveState(); renderTracker(); }
+}
+function updateHabitColor(id, val) {
+  const h = state.habits.find(h => h.id === id);
+  if (h) { h.color = val; saveState(); renderTracker(); }
+}
+function deleteHabit(id) {
+  if (!confirm('¿Eliminar este hábito? Se perderán todos sus datos.')) return;
+  state.habits = state.habits.filter(h => h.id !== id);
+  saveState();
+  renderSettings();
+  renderTracker();
+}
+
+document.getElementById('add-habit-btn').onclick = () => {
+  const name = prompt('Nombre del nuevo hábito:');
+  if (!name || !name.trim()) return;
+  state.habits.push({
+    id: state.nextId++,
+    name: name.trim(),
+    color: BAR_COLORS[state.habits.length % BAR_COLORS.length],
+  });
+  saveState();
+  renderSettings();
+  renderTracker();
+};
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── PWA INSTALL ───────────────────────────────────────────────────────────
+let deferredPrompt = null;
+const banner = document.getElementById('install-banner');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  banner.classList.add('show');
+});
+
+document.getElementById('btn-install').onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  banner.classList.remove('show');
+};
+document.getElementById('btn-dismiss').onclick = () => {
+  banner.classList.remove('show');
+  localStorage.setItem('install_dismissed', '1');
+};
+
+if (localStorage.getItem('install_dismissed')) banner.classList.remove('show');
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+renderTracker();
+</script>
+</body>
+</html>
