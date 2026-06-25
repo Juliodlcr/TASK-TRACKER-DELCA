@@ -12,12 +12,12 @@
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg:      #080808;
-      --surface: #111111;
-      --surf2:   #1a1a1a;
-      --border:  #2a2a2a;
-      --text:    #f0f0f0;
-      --muted:   #555555;
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --surf2:   #1c2128;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #6e7681;
       --accent:  #22c55e;
       --red:     #f87171;
     }
@@ -110,9 +110,9 @@
     }
 
     /* ── SECTION SIZES ── */
-    .row-habits   { flex: 4; }
-    .row-hchart   { flex: 1.8; }
-    .row-mental   { flex: 2; }
+    .row-habits   { flex: 5; }
+    .row-hchart   { flex: 2; }
+    .row-mental   { flex: 2.2; }
     .row-mchart   { flex: 1.8; }
 
     /* ── HABIT TABLE ── */
@@ -135,6 +135,8 @@
     }
     /* day header tinted per week */
     .day-th { font-size: 8px; padding: 3px 5px; }
+    /* week column right border for separation */
+    .week-end { border-right: 2px solid var(--border); }
 
     .chk {
       width: 24px; height: 24px; border-radius: 6px;
@@ -145,6 +147,11 @@
     .chk svg { display: none; width: 14px; height: 14px; }
     .chk.done { border-color: transparent; }
     .chk.done svg { display: block; }
+
+    /* daily summary rows below the grid */
+    .sum-row td { padding: 2px 4px; border-top: 1px solid var(--border); }
+    .sum-row td:first-child { text-align: left; font-size: 9px; color: var(--muted); font-weight: 600; padding-right: 16px; white-space: nowrap; }
+    .sum-row .sum-val { font-size: 8px; font-weight: 700; }
 
     /* ── ANALYSIS LIST ── */
     .a-item { display: flex; flex-direction: column; gap: 3px; }
@@ -612,28 +619,90 @@ document.getElementById('m-next').onclick=()=>{M++;if(M>11){M=0;Y++;}renderAll()
 // ── HABIT TABLE ───────────────────────────────────────────────────────────
 function buildHabitTable(headId, bodyId, y, m) {
   const ws=weeks(y,m), first=fdow(y,m);
+  // week header row
   let h='<tr><th style="text-align:left;padding-right:8px">Hábito</th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${WC[wi]};color:#fff">Sem ${wi+1}</th>`);
+  ws.forEach((w,wi)=>{
+    const last=wi===ws.length-1;
+    h+=`<th colspan="${w.days.length}" class="wlbl${last?'':' week-end'}" style="background:${WC[wi]};color:#fff">Sem ${wi+1}</th>`;
+  });
   h+='<th style="font-size:8px;color:var(--muted)">%</th></tr><tr><th></th>';
-  ws.forEach((w,wi)=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th class="day-th" style="background:${WC[wi]}18;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;}));
+  // day header row
+  ws.forEach((w,wi)=>{
+    const last=wi===ws.length-1;
+    w.days.forEach((d,di)=>{
+      const dow=(first+d-1)%7;
+      const isLastDay=di===w.days.length-1;
+      h+=`<th class="day-th${(!last&&isLastDay)?' week-end':''}" style="background:${WC[wi]}22;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;
+    });
+  });
   h+='<th></th></tr>';
   document.getElementById(headId).innerHTML=h;
 
+  // habit rows
   let body='';
   S.habits.forEach(hab=>{
     let done=0,tot=0;
-    let row=`<tr><td>${hab.name}</td>`;
-    ws.forEach((w,wi)=>w.days.forEach(d=>{
-      const k=ck(y,m,d,hab.id),c=!!S.checks[k]; if(c)done++;tot++;
-      row+=`<td><button class="chk${c?' done':''}" data-key="${k}" data-color="${WC[wi]}"
-        style="${c?'background:'+WC[wi]+';border-color:transparent':''}"
-        onclick="toggleChk(this)">${CHK}</button></td>`;
-    }));
+    let row=`<tr class="habit-row"><td>${hab.name}</td>`;
+    ws.forEach((w,wi)=>{
+      const last=wi===ws.length-1;
+      w.days.forEach((d,di)=>{
+        const k=ck(y,m,d,hab.id),c=!!S.checks[k]; if(c)done++;tot++;
+        const isLastDay=di===w.days.length-1;
+        const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
+        row+=`<td style="${sep}"><button class="chk${c?' done':''}" data-key="${k}" data-color="${WC[wi]}"
+          style="${c?'background:'+WC[wi]+';border-color:transparent':''}"
+          onclick="toggleChk(this)">${CHK}</button></td>`;
+      });
+    });
     const p=tot>0?Math.round(done/tot*100):0;
     row+=`<td style="font-size:9px;font-weight:700;color:${hab.color};padding-left:6px">${p}%</td></tr>`;
     body+=row;
   });
-  document.getElementById(bodyId).innerHTML=body;
+
+  // daily summary rows
+  const totH=S.habits.length;
+  // % row
+  let rPct=`<tr class="sum-row"><td>Progreso</td>`;
+  ws.forEach((w,wi)=>{
+    const last=wi===ws.length-1;
+    w.days.forEach((d,di)=>{
+      let done=0; S.habits.forEach(h=>{ if(S.checks[ck(y,m,d,h.id)]) done++; });
+      const p=totH>0?Math.round(done/totH*100):0;
+      const isLastDay=di===w.days.length-1;
+      const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
+      rPct+=`<td style="${sep}"><span class="sum-val" style="color:${WC[wi]}">${p}%</span></td>`;
+    });
+  });
+  rPct+='<td></td></tr>';
+
+  // done row
+  let rDone=`<tr class="sum-row"><td>Hechos</td>`;
+  ws.forEach((w,wi)=>{
+    const last=wi===ws.length-1;
+    w.days.forEach((d,di)=>{
+      let done=0; S.habits.forEach(h=>{ if(S.checks[ck(y,m,d,h.id)]) done++; });
+      const isLastDay=di===w.days.length-1;
+      const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
+      rDone+=`<td style="${sep}"><span class="sum-val" style="color:var(--accent)">${done}</span></td>`;
+    });
+  });
+  rDone+='<td></td></tr>';
+
+  // not done row
+  let rNot=`<tr class="sum-row"><td>Pendientes</td>`;
+  ws.forEach((w,wi)=>{
+    const last=wi===ws.length-1;
+    w.days.forEach((d,di)=>{
+      let done=0; S.habits.forEach(h=>{ if(S.checks[ck(y,m,d,h.id)]) done++; });
+      const nd=totH-done;
+      const isLastDay=di===w.days.length-1;
+      const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
+      rNot+=`<td style="${sep}"><span class="sum-val" style="color:var(--muted)">${nd}</span></td>`;
+    });
+  });
+  rNot+='<td></td></tr>';
+
+  document.getElementById(bodyId).innerHTML=body+rPct+rDone+rNot;
 }
 
 function toggleChk(btn){
@@ -685,10 +754,12 @@ function cycleMental(key,btn){
 function drawHabitChart(id,y,m){
   const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
   const ctx=canvas.getContext('2d');
-  const W=canvas.offsetWidth, H=canvas.parentElement.clientHeight-4||100;
-  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  const W=canvas.parentElement.clientWidth||canvas.offsetWidth;
+  const H=canvas.parentElement.clientHeight-4||100;
+  canvas.width=W*devicePixelRatio; canvas.height=Math.max(H,40)*devicePixelRatio;
+  canvas.style.width=W+'px'; canvas.style.height=Math.max(H,40)+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.clearRect(0,0,W,H);
+  ctx.clearRect(0,0,W,Math.max(H,40));
 
   const days=dim(y,m),pcts=[];
   for(let d=1;d<=days;d++){
@@ -725,8 +796,10 @@ function drawHabitChart(id,y,m){
 function drawMentalChart(id,y,m){
   const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
   const ctx=canvas.getContext('2d');
-  const W=canvas.offsetWidth, H=canvas.parentElement.clientHeight-28||90;
+  const W=canvas.parentElement.clientWidth||canvas.offsetWidth;
+  const H=canvas.parentElement.clientHeight-28||90;
   canvas.width=W*devicePixelRatio; canvas.height=Math.max(H,40)*devicePixelRatio;
+  canvas.style.width=W+'px'; canvas.style.height=Math.max(H,40)+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
   ctx.clearRect(0,0,W,Math.max(H,40));
 
