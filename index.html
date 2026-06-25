@@ -12,12 +12,12 @@
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg:      #0d1117;
-      --surface: #161b22;
-      --surf2:   #1c2128;
-      --border:  #30363d;
-      --text:    #e6edf3;
-      --muted:   #6e7681;
+      --bg:      #111316;
+      --surface: #1a1d22;
+      --surf2:   #22252c;
+      --border:  #2e3138;
+      --text:    #e2e4e9;
+      --muted:   #6b6f7a;
       --accent:  #22c55e;
       --red:     #f87171;
     }
@@ -657,9 +657,10 @@ function buildHabitTable(headId, bodyId, y, m) {
     body+=row;
   });
 
-  // daily summary rows
+  // daily summary rows — data-sumday/type allow live updates without rebuild
   const totH=S.habits.length;
-  // % row
+  const dayKey=(d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
   let rPct=`<tr class="sum-row"><td>Progreso</td>`;
   ws.forEach((w,wi)=>{
     const last=wi===ws.length-1;
@@ -668,12 +669,11 @@ function buildHabitTable(headId, bodyId, y, m) {
       const p=totH>0?Math.round(done/totH*100):0;
       const isLastDay=di===w.days.length-1;
       const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
-      rPct+=`<td style="${sep}"><span class="sum-val" style="color:${WC[wi]}">${p}%</span></td>`;
+      rPct+=`<td style="${sep}"><span class="sum-val" style="color:${WC[wi]}" data-sumday="${dayKey(d)}" data-sumtype="pct">${p}%</span></td>`;
     });
   });
   rPct+='<td></td></tr>';
 
-  // done row
   let rDone=`<tr class="sum-row"><td>Hechos</td>`;
   ws.forEach((w,wi)=>{
     const last=wi===ws.length-1;
@@ -681,12 +681,11 @@ function buildHabitTable(headId, bodyId, y, m) {
       let done=0; S.habits.forEach(h=>{ if(S.checks[ck(y,m,d,h.id)]) done++; });
       const isLastDay=di===w.days.length-1;
       const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
-      rDone+=`<td style="${sep}"><span class="sum-val" style="color:var(--accent)">${done}</span></td>`;
+      rDone+=`<td style="${sep}"><span class="sum-val" style="color:var(--accent)" data-sumday="${dayKey(d)}" data-sumtype="done">${done}</span></td>`;
     });
   });
   rDone+='<td></td></tr>';
 
-  // not done row
   let rNot=`<tr class="sum-row"><td>Pendientes</td>`;
   ws.forEach((w,wi)=>{
     const last=wi===ws.length-1;
@@ -695,7 +694,7 @@ function buildHabitTable(headId, bodyId, y, m) {
       const nd=totH-done;
       const isLastDay=di===w.days.length-1;
       const sep=(!last&&isLastDay)?'border-right:2px solid var(--border)':'';
-      rNot+=`<td style="${sep}"><span class="sum-val" style="color:var(--muted)">${nd}</span></td>`;
+      rNot+=`<td style="${sep}"><span class="sum-val" style="color:var(--muted)" data-sumday="${dayKey(d)}" data-sumtype="nd">${nd}</span></td>`;
     });
   });
   rNot+='<td></td></tr>';
@@ -708,7 +707,27 @@ function toggleChk(btn){
   S.checks[k]=!S.checks[k];
   if(S.checks[k]){btn.classList.add('done');btn.style.background=c;btn.style.borderColor='transparent';}
   else{btn.classList.remove('done');btn.style.background='';btn.style.borderColor='';}
+  // update summary row cells for this day
+  const dayKey=k.split('_')[0]; // "YYYY-MM-DD"
+  updateSumCells(dayKey);
   save();renderStats();
+  requestAnimationFrame(()=>{drawHabitChart('d-hchart',Y,M);drawHabitChart('m-hchart',Y,M);});
+}
+
+function updateSumCells(dayKey){
+  // recalculate per-day totals and update sum-val spans live
+  const d=parseInt(dayKey.split('-')[2]);
+  const y=parseInt(dayKey.split('-')[0]);
+  const m=parseInt(dayKey.split('-')[1])-1;
+  let done=0;
+  S.habits.forEach(h=>{if(S.checks[ck(y,m,d,h.id)])done++;});
+  const tot=S.habits.length;
+  const pct=tot>0?Math.round(done/tot*100):0;
+  document.querySelectorAll(`[data-sumday="${dayKey}"]`).forEach(el=>{
+    if(el.dataset.sumtype==='pct') el.textContent=pct+'%';
+    if(el.dataset.sumtype==='done') el.textContent=done;
+    if(el.dataset.sumtype==='nd') el.textContent=tot-done;
+  });
 }
 
 // ── MENTAL TABLE ──────────────────────────────────────────────────────────
@@ -766,16 +785,18 @@ function drawHabitChart(id,y,m){
   }
   if(pcts.length<2)return;
 
-  const pad={t:6,b:16,l:28,r:8};
-  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+  // align chart with grid columns: skip name col (110px) + row padding (10px)
+  const COL_NAME=110, COL_PCT=36, ROW_PAD=10;
+  const pad={t:6,b:16,l:COL_NAME+ROW_PAD,r:COL_PCT+ROW_PAD};
+  const gW=W-pad.l-pad.r, gH=Math.max(H,40)-pad.t-pad.b;
   const px=i=>pad.l+(i/(days-1))*gW, py=v=>pad.t+gH*(1-v);
 
   [0,.25,.5,.75,1].forEach(v=>{
     const yy=py(v);
-    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='8px sans-serif';
-    ctx.fillText(Math.round(v*100)+'%',1,yy+3);
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='8px sans-serif';
+    ctx.fillText(Math.round(v*100)+'%',pad.l+4,yy-2);
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
@@ -810,17 +831,18 @@ function drawMentalChart(id,y,m){
   const hasData=seriesData.some(s=>s.some(v=>v!==null));
   if(!hasData)return;
 
-  const pad={t:6,b:16,l:28,r:8};
+  const COL_NAME=110, COL_PCT=36, ROW_PAD=10;
+  const pad={t:6,b:16,l:COL_NAME+ROW_PAD,r:COL_PCT+ROW_PAD};
   const gW=W-pad.l-pad.r, gH=Math.max(H,40)-pad.t-pad.b;
   const px=i=>pad.l+(i/(days-1||1))*gW;
   const py=v=>pad.t+gH*(1-v/10);
 
   [0,5,10].forEach(v=>{
     const yy=py(v);
-    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='8px sans-serif';
-    ctx.fillText(v,1,yy+3);
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='8px sans-serif';
+    ctx.fillText(v,pad.l+4,yy-2);
   });
 
   seriesData.forEach((pts,ri)=>{
