@@ -39,6 +39,12 @@
       /* on desktop tables fill container — no horizontal scroll needed */
       #dashboard .row-content.scroll-x { overflow-x: hidden; overflow-y: hidden; }
     }
+    /* mobile: tables scroll horizontally with natural width */
+    #mobile .habit-table,
+    #mobile .mental-table {
+      table-layout: auto;
+      width: max-content;
+    }
 
     /* ── TOPBAR ── */
     .topbar {
