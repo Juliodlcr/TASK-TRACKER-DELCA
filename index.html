@@ -12,13 +12,13 @@
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg:      #060a06;
-      --surface: #0d1a0f;
-      --surf2:   #122015;
-      --border:  #1e3a22;
-      --text:    #ecfdf5;
-      --muted:   #6b9e78;
-      --accent:  #10b981;
+      --bg:      #080808;
+      --surface: #111111;
+      --surf2:   #1a1a1a;
+      --border:  #2a2a2a;
+      --text:    #f0f0f0;
+      --muted:   #666666;
+      --accent:  #22c55e;
       --red:     #f87171;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -258,9 +258,14 @@
     /* mobile habit grid */
     .m-grid-wrap {
       flex: 1; min-height: 0;
-      overflow-x: auto; overflow-y: auto;
+      overflow-x: scroll; overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
+    .m-grid-wrap .habit-table { min-width: max-content; }
+    .m-grid-wrap .chk { width: 24px; height: 24px; }
+    .m-grid-wrap .habit-table th { padding: 3px 5px; font-size: 9px; }
+    .m-grid-wrap .habit-table td { padding: 2px 4px; }
+    .m-grid-wrap .habit-row td:first-child { font-size: 12px; padding-right: 14px; }
 
     /* mobile analysis */
     .m-analysis { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
@@ -551,8 +556,8 @@
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const WC = ['#166534','#15803d','#16a34a','#22c55e','#4ade80'];
-const BC = ['#10b981','#059669','#047857','#22c55e','#4ade80','#86efac','#34d399','#6ee7b7','#a7f3d0','#d1fae5'];
+const WC = ['#22c55e','#16a34a','#15803d','#166534','#14532d'];
+const BC = ['#22c55e','#4ade80','#16a34a','#86efac','#059669','#34d399','#bbf7d0','#6ee7b7','#a7f3d0','#4ade80'];
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
@@ -681,8 +686,8 @@ function buildMentalTable(headId,bodyId,y,m) {
 }
 
 function mentalColor(v) {
-  // 0–10 gradient: dark green → bright green
-  const stops = ['#14532d','#166534','#15803d','#16a34a','#22c55e','#22c55e','#4ade80','#4ade80','#86efac','#86efac','#d1fae5'];
+  // 0–10: gray → green
+  const stops = ['#333','#3d4d3d','#2d5c2d','#1e6b1e','#16a34a','#16a34a','#22c55e','#22c55e','#4ade80','#4ade80','#86efac'];
   return stops[Math.min(v, stops.length-1)];
 }
 function cycleMental(key,btn){
@@ -859,14 +864,14 @@ function startExport(){
     </div>`;
   });
   document.getElementById('share-card').innerHTML=`
-    <div style="background:#060a06;padding:28px;border-radius:14px;width:720px;font-family:-apple-system,sans-serif">
+    <div style="background:#080808;padding:28px;border-radius:14px;width:720px;font-family:-apple-system,sans-serif">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <div><div style="font-size:18px;font-weight:800;color:#f1f5f9">${MONTHS[m]} ${y}</div>
         <div style="font-size:10px;color:#94a3b8;margin-top:2px">Habit Tracker</div></div>
         <div style="text-align:right"><div style="font-size:30px;font-weight:800;color:#22d3ee">${pct}%</div>
         <div style="font-size:10px;color:#94a3b8">progreso</div></div>
       </div>
-      <div style="background:#0d2e14;border-radius:999px;height:6px;margin-bottom:18px">
+      <div style="background:#1a1a1a;border-radius:999px;height:6px;margin-bottom:18px">
         <div style="width:${pct}%;height:6px;border-radius:999px;background:linear-gradient(90deg,#059669,#10b981)"></div>
       </div>
       ${rows}
