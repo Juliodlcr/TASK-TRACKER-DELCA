@@ -653,7 +653,7 @@ function buildHabitTable(headId, bodyId, y, m) {
       });
     });
     const p=tot>0?Math.round(done/tot*100):0;
-    row+=`<td style="font-size:9px;font-weight:700;color:${hab.color};padding-left:6px">${p}%</td></tr>`;
+    row+=`<td style="font-size:9px;font-weight:700;color:${hab.color};padding-left:6px" data-habpct="${hab.id}">${p}%</td></tr>`;
     body+=row;
   });
 
@@ -707,11 +707,22 @@ function toggleChk(btn){
   S.checks[k]=!S.checks[k];
   if(S.checks[k]){btn.classList.add('done');btn.style.background=c;btn.style.borderColor='transparent';}
   else{btn.classList.remove('done');btn.style.background='';btn.style.borderColor='';}
-  // update summary row cells for this day
-  const dayKey=k.split('_')[0]; // "YYYY-MM-DD"
+  // update daily summary cells
+  const dayKey=k.split('_')[0];
   updateSumCells(dayKey);
+  // update this habit's % column in real time
+  const habId=parseInt(k.split('_')[1]);
+  updateHabPct(habId);
   save();renderStats();
   requestAnimationFrame(()=>{drawHabitChart('d-hchart',Y,M);drawHabitChart('m-hchart',Y,M);});
+}
+
+function updateHabPct(habId){
+  const days=dim(Y,M);
+  let done=0;
+  for(let d=1;d<=days;d++) if(S.checks[ck(Y,M,d,habId)]) done++;
+  const p=Math.round(done/days*100);
+  document.querySelectorAll(`[data-habpct="${habId}"]`).forEach(el=>el.textContent=p+'%');
 }
 
 function updateSumCells(dayKey){
@@ -795,8 +806,9 @@ function drawHabitChart(id,y,m){
     const yy=py(v);
     ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='8px sans-serif';
-    ctx.fillText(Math.round(v*100)+'%',pad.l+4,yy-2);
+    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='8px sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(Math.round(v*100)+'%', 4, yy-2);
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
@@ -841,8 +853,9 @@ function drawMentalChart(id,y,m){
     const yy=py(v);
     ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='8px sans-serif';
-    ctx.fillText(v,pad.l+4,yy-2);
+    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='8px sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(v, 4, yy-2);
   });
 
   seriesData.forEach((pts,ri)=>{
