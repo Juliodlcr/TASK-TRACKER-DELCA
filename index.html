@@ -12,13 +12,13 @@
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg:      #0f172a;
-      --surface: #1e293b;
-      --surf2:   #273449;
-      --border:  #334155;
-      --text:    #f1f5f9;
-      --muted:   #94a3b8;
-      --accent:  #22d3ee;
+      --bg:      #060a06;
+      --surface: #0d1a0f;
+      --surf2:   #122015;
+      --border:  #1e3a22;
+      --text:    #ecfdf5;
+      --muted:   #6b9e78;
+      --accent:  #10b981;
       --red:     #f87171;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,7 +102,7 @@
     }
     .p-label { font-size: 10px; color: var(--muted); white-space: nowrap; }
     .p-track { flex: 1; background: var(--surf2); border-radius: 999px; height: 7px; }
-    .p-fill   { height: 7px; border-radius: 999px; background: linear-gradient(90deg,#2dd4bf,#22d3ee); transition: width .4s; }
+    .p-fill   { height: 7px; border-radius: 999px; background: linear-gradient(90deg,#059669,#10b981); transition: width .4s; }
     .p-pct    { font-size: 12px; font-weight: 700; color: var(--accent); width: 34px; text-align: right; }
 
     /* ── MIDDLE ROW: habits + analysis ── */
@@ -253,7 +253,7 @@
     .m-prog { flex-shrink: 0; }
     .m-prog-hdr { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
     .m-prog-track { background: var(--surf2); border-radius: 999px; height: 6px; }
-    .m-prog-fill  { height: 6px; border-radius: 999px; background: linear-gradient(90deg,#2dd4bf,#22d3ee); transition: width .4s; }
+    .m-prog-fill  { height: 6px; border-radius: 999px; background: linear-gradient(90deg,#059669,#10b981); transition: width .4s; }
 
     /* mobile habit grid */
     .m-grid-wrap {
@@ -551,8 +551,8 @@
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const WC = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ec4899'];
-const BC = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ec4899','#f87171','#a78bfa','#2dd4bf','#fbbf24','#fb923c'];
+const WC = ['#166534','#15803d','#16a34a','#22c55e','#4ade80'];
+const BC = ['#10b981','#059669','#047857','#22c55e','#4ade80','#86efac','#34d399','#6ee7b7','#a7f3d0','#d1fae5'];
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
@@ -681,8 +681,8 @@ function buildMentalTable(headId,bodyId,y,m) {
 }
 
 function mentalColor(v) {
-  // 0–10 gradient: red → yellow → green
-  const stops = ['#ef4444','#f97316','#f97316','#eab308','#eab308','#84cc16','#84cc16','#22c55e','#22c55e','#16a34a','#15803d'];
+  // 0–10 gradient: dark green → bright green
+  const stops = ['#14532d','#166534','#15803d','#16a34a','#22c55e','#22c55e','#4ade80','#4ade80','#86efac','#86efac','#d1fae5'];
   return stops[Math.min(v, stops.length-1)];
 }
 function cycleMental(key,btn){
@@ -723,14 +723,14 @@ function drawChart(canvasId,y,m) {
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
-  grad.addColorStop(0,'rgba(34,211,238,.3)');grad.addColorStop(1,'rgba(34,211,238,.01)');
+  grad.addColorStop(0,'rgba(16,185,129,.35)');grad.addColorStop(1,'rgba(16,185,129,.01)');
 
   ctx.beginPath();
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.lineTo(px(days-1),H-pad.b);ctx.lineTo(pad.l,H-pad.b);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
 
-  ctx.beginPath();ctx.strokeStyle='#22d3ee';ctx.lineWidth=1.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#10b981';ctx.lineWidth=1.5;ctx.lineJoin='round';
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.stroke();
 }
@@ -859,15 +859,15 @@ function startExport(){
     </div>`;
   });
   document.getElementById('share-card').innerHTML=`
-    <div style="background:#0f172a;padding:28px;border-radius:14px;width:720px;font-family:-apple-system,sans-serif">
+    <div style="background:#060a06;padding:28px;border-radius:14px;width:720px;font-family:-apple-system,sans-serif">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <div><div style="font-size:18px;font-weight:800;color:#f1f5f9">${MONTHS[m]} ${y}</div>
         <div style="font-size:10px;color:#94a3b8;margin-top:2px">Habit Tracker</div></div>
         <div style="text-align:right"><div style="font-size:30px;font-weight:800;color:#22d3ee">${pct}%</div>
         <div style="font-size:10px;color:#94a3b8">progreso</div></div>
       </div>
-      <div style="background:#1e293b;border-radius:999px;height:6px;margin-bottom:18px">
-        <div style="width:${pct}%;height:6px;border-radius:999px;background:linear-gradient(90deg,#2dd4bf,#22d3ee)"></div>
+      <div style="background:#0d2e14;border-radius:999px;height:6px;margin-bottom:18px">
+        <div style="width:${pct}%;height:6px;border-radius:999px;background:linear-gradient(90deg,#059669,#10b981)"></div>
       </div>
       ${rows}
       <div style="margin-top:16px;font-size:9px;color:#475569;text-align:center">✦ habit tracker</div>
