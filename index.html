@@ -185,8 +185,6 @@
       transition: all .12s;
     }
     .sbtn.on { border-color: transparent; color: #fff; font-weight: 700; }
-    .s0.on{background:#ef4444}.s1.on{background:#f97316}
-    .s2.on{background:#eab308}.s3.on{background:#84cc16}.s4.on{background:#22c55e}
 
     /* mindset scores */
     .mindset-list { display: flex; flex-direction: column; gap: 8px; }
@@ -368,8 +366,8 @@
     <span class="topbar-title">✦ Habit Tracker — <span id="d-month-lbl" style="color:var(--accent)"></span></span>
     <div class="topbar-right">
       <button class="action-btn" onclick="openSettings()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Hábitos
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Hábito
       </button>
       <button class="action-btn primary" onclick="startExport()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -543,10 +541,10 @@
 <div id="settings-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;padding:20px">
   <div class="modal-box" style="max-width:440px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <h2 style="font-size:15px;font-weight:700">Mis Hábitos</h2>
-      <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+      <h2 style="font-size:15px;font-weight:700">Editar Hábitos</h2>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
     </div>
-    <div id="d-hedit-list" style="max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
+    <div id="d-hedit-list" style="max-height:55vh;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
     <button class="add-btn" id="d-add-btn" style="margin-top:10px">+ Agregar hábito</button>
   </div>
 </div>
@@ -557,7 +555,7 @@ const WC = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ec4899'];
 const BC = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ec4899','#f87171','#a78bfa','#2dd4bf','#fbbf24','#fb923c'];
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const MR = ['Mood','Med.','Score'];
+const MR = ['Mañana','Tarde','Noche'];
 const CHK = `<svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>`;
 const DEF = [
   {name:'Early start 🌅',color:'#6366f1'},{name:'Gym 💪',color:'#06b6d4'},
@@ -674,18 +672,24 @@ function buildMentalTable(headId,bodyId,y,m) {
     let row=`<tr><td>${rn}</td>`;
     ws.forEach(w=>w.days.forEach(d=>{
       const k=mk(y,m,d,ri),v=S.mental[k]??null;
-      row+=`<td><button class="sbtn${v!==null?' s'+v+' on':''}" onclick="cycleMental('${k}',this)">${v!==null?v:'·'}</button></td>`;
+      const ms=v!==null?`background:${mentalColor(v)};border-color:transparent`:'';
+      row+=`<td><button class="sbtn${v!==null?' on':''}" style="${ms}" onclick="cycleMental('${k}',this)">${v!==null?v:'·'}</button></td>`;
     }));
     row+='</tr>';body+=row;
   });
   document.getElementById(bodyId).innerHTML=body;
 }
 
+function mentalColor(v) {
+  // 0–10 gradient: red → yellow → green
+  const stops = ['#ef4444','#f97316','#f97316','#eab308','#eab308','#84cc16','#84cc16','#22c55e','#22c55e','#16a34a','#15803d'];
+  return stops[Math.min(v, stops.length-1)];
+}
 function cycleMental(key,btn){
-  const cur=S.mental[key]??null,next=cur===null?0:cur===4?null:cur+1;
+  const cur=S.mental[key]??null,next=cur===null?0:cur===10?null:cur+1;
   S.mental[key]=next;save();
-  if(next===null){btn.className='sbtn';btn.textContent='·';}
-  else{btn.className=`sbtn s${next} on`;btn.textContent=next;}
+  if(next===null){btn.className='sbtn';btn.textContent='·';btn.style.background='';btn.style.borderColor='';}
+  else{btn.className='sbtn on';btn.style.background=mentalColor(next);btn.style.borderColor='transparent';btn.textContent=next;}
   renderMindset();
 }
 
@@ -752,7 +756,7 @@ function renderMindset() {
   let html='';
   ws.forEach((w,wi)=>{
     let sc=[];
-    w.days.forEach(d=>MR.forEach((_,ri)=>{const v=S.mental[mk(Y,M,d,ri)];if(v!=null)sc.push(v/4*100);}));
+    w.days.forEach(d=>MR.forEach((_,ri)=>{const v=S.mental[mk(Y,M,d,ri)];if(v!=null)sc.push(v/10*100);}));
     const avg=sc.length>0?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;
     html+=`<div class="ms-row">
       <div class="ms-hdr"><span style="color:${WC[wi]}">Sem ${wi+1}</span><span class="ms-pct">${avg}%</span></div>
