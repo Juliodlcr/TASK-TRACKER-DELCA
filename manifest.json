@@ -1,11 +1,12 @@
 {
-  "name": "Habit Tracker",
+  "name": "Habit Tracker DELCA",
   "short_name": "Habits",
   "description": "Tracker mensual de hábitos — funciona offline",
-  "start_url": "/",
+  "start_url": "/TASK-TRACKER-DELCA/",
+  "scope": "/TASK-TRACKER-DELCA/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#111316",
+  "theme_color": "#111316",
   "orientation": "portrait",
   "icons": [
     {
