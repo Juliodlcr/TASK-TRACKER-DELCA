@@ -501,8 +501,29 @@
       <span class="m-prog-pct" id="m-ppct">0%</span>
     </div>
     <div class="m-sec">Mis Hábitos</div>
-    <div class="m-scroll">
+    <div class="m-scroll" style="flex:1;min-height:0">
       <table class="habit-table"><thead id="mh-head"></thead><tbody id="mh-body"></tbody></table>
+    </div>
+    <div style="flex-shrink:0;border-top:1px solid var(--border);padding:6px 12px 8px">
+      <div class="m-sec" style="padding:0 0 4px">Progreso diario</div>
+      <canvas id="m-hchart-t" height="70"></canvas>
+    </div>
+  </div>
+
+  <!-- MENTAL TAB -->
+  <div class="m-page" id="mp-mental">
+    <div class="m-hdr">
+      <h1>Estado Mental</h1>
+      <span style="font-size:11px;color:var(--muted)" id="m-mt-lbl"></span>
+    </div>
+    <div class="m-sec">Registro</div>
+    <div class="m-mental-scroll" style="flex:1;min-height:0">
+      <table class="mental-table"><thead id="mm-head2"></thead><tbody id="mm-body2"></tbody></table>
+    </div>
+    <div style="flex-shrink:0;border-top:1px solid var(--border);padding:6px 12px 8px">
+      <div class="m-sec" style="padding:0 0 4px">Evolución mental</div>
+      <canvas id="m-mchart2" height="90"></canvas>
+      <div id="m-mchart-legend2" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
     </div>
   </div>
 
@@ -550,6 +571,10 @@
     <button class="active" onclick="showTab('tracker')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Tracker
+    </button>
+    <button onclick="showTab('mental')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 3.5-2.5 5.5-3 8H8c-.5-2.5-3-4.5-3-8a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="10" y1="17" x2="14" y2="17"/></svg>
+      Mental
     </button>
     <button onclick="showTab('analysis')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -650,8 +675,10 @@ function showTab(id) {
   document.querySelectorAll('.m-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.m-nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('mp-'+id).classList.add('active');
-  const idx={tracker:0,analysis:1,settings:2}[id];
+  const idx={tracker:0,mental:1,analysis:2,settings:3}[id];
   document.querySelectorAll('.m-nav button')[idx].classList.add('active');
+  if(id==='tracker') requestAnimationFrame(()=>drawHabitChart('m-hchart-t',Y,M));
+  if(id==='mental') renderMobileMental();
   if(id==='analysis') renderMobileAnalysis();
   if(id==='settings') renderSettings('hedit-list','add-btn');
 }
@@ -763,7 +790,7 @@ function toggleChk(btn){
   const habId=parseInt(k.split('_')[1]);
   updateHabPct(habId);
   save();renderStats();
-  requestAnimationFrame(()=>{drawHabitChart('d-hchart',Y,M);drawHabitChart('m-hchart',Y,M);});
+  requestAnimationFrame(()=>{drawHabitChart('d-hchart',Y,M);drawHabitChart('m-hchart',Y,M);drawHabitChart('m-hchart-t',Y,M);});
 }
 
 function updateHabPct(habId){
@@ -825,7 +852,7 @@ function cycleMental(key,btn){
   if(next===null){btn.className='sbtn';btn.style.background='';btn.style.borderColor='';btn.style.color='';btn.textContent='·';}
   else{btn.className='sbtn on';btn.style.background=mentalColor(next);btn.style.borderColor='transparent';btn.style.color=next>=5?'#fff':'#111';btn.textContent=next;}
   renderMindset();
-  requestAnimationFrame(()=>{drawMentalChart('d-mchart',Y,M);drawMentalChart('m-mchart',Y,M);});
+  requestAnimationFrame(()=>{drawMentalChart('d-mchart',Y,M);drawMentalChart('m-mchart',Y,M);drawMentalChart('m-mchart2',Y,M);});
 }
 
 // ── HABITS CHART ──────────────────────────────────────────────────────────
@@ -997,6 +1024,13 @@ function renderStats(){
   if(el)el.textContent=`${pct}% completado`;
 }
 
+// ── MOBILE MENTAL ─────────────────────────────────────────────────────────
+function renderMobileMental(){
+  document.getElementById('m-mt-lbl').textContent=`${MONTHS[M]} ${Y}`;
+  buildMentalTable('mm-head2','mm-body2',Y,M);
+  requestAnimationFrame(()=>drawMentalChart('m-mchart2',Y,M));
+}
+
 // ── MOBILE ANALYSIS ───────────────────────────────────────────────────────
 function renderMobileAnalysis(){
   const days=dim(Y,M);
@@ -1115,6 +1149,7 @@ function renderAll(){
   requestAnimationFrame(()=>{
     drawHabitChart('d-hchart',Y,M);
     drawMentalChart('d-mchart',Y,M);
+    drawHabitChart('m-hchart-t',Y,M);
   });
 }
 
@@ -1122,6 +1157,7 @@ renderAll();
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{
   drawHabitChart('d-hchart',Y,M);drawMentalChart('d-mchart',Y,M);
   drawHabitChart('m-hchart',Y,M);drawMentalChart('m-mchart',Y,M);
+  drawHabitChart('m-hchart-t',Y,M);drawMentalChart('m-mchart2',Y,M);
 }));
 </script>
 </body>
