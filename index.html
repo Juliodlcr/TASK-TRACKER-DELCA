@@ -533,21 +533,8 @@
       <h1>Análisis</h1>
       <span style="font-size:11px;color:var(--muted)" id="m-an-lbl"></span>
     </div>
-    <div class="m-chart-wrap">
-      <div class="m-sec" style="padding:6px 0 4px">Progreso diario</div>
-      <canvas id="m-hchart" height="80"></canvas>
-    </div>
     <div class="m-sec">Por hábito</div>
     <div class="m-analysis" id="m-analysis-list"></div>
-    <div class="m-sec">Estado Mental</div>
-    <div class="m-mental-scroll">
-      <table class="mental-table"><thead id="mm-head"></thead><tbody id="mm-body"></tbody></table>
-    </div>
-    <div class="m-chart-wrap" style="padding-top:0">
-      <div class="m-sec" style="padding:6px 0 4px">Evolución mental</div>
-      <canvas id="m-mchart" height="80"></canvas>
-      <div id="m-mchart-legend" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
-    </div>
   </div>
 
   <!-- SETTINGS TAB -->
@@ -1048,8 +1035,6 @@ function renderMobileAnalysis(){
     </div>`;
   });
   document.getElementById('m-analysis-list').innerHTML=html;
-  buildMentalTable('mm-head','mm-body',Y,M);
-  requestAnimationFrame(()=>{drawHabitChart('m-hchart',Y,M);drawMentalChart('m-mchart',Y,M);});
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────────────────
