@@ -289,10 +289,10 @@
     /* mobile mental */
     .m-mental-scroll { flex: 1; min-height: 0; overflow-x: auto; overflow-y: hidden; padding: 0 0 8px; -webkit-overflow-scrolling: touch; }
     .m-mental-scroll .mental-table { min-width: max-content; }
-    .m-mental-scroll .sbtn { width: 24px; height: 24px; font-size: 9px; }
-    .m-mental-scroll .mental-table th { padding: 3px 3px; font-size: 9px; }
-    .m-mental-scroll .mental-table td { padding: 3px 3px; }
-    .m-mental-scroll .mental-table td:first-child { padding-left: 10px; font-size: 11px; min-width: 70px; }
+    .m-mental-scroll .sbtn { width: 30px; height: 30px; font-size: 12px; font-weight: 600; border-radius: 6px; }
+    .m-mental-scroll .mental-table th { padding: 4px 3px; font-size: 10px; }
+    .m-mental-scroll .mental-table td { padding: 4px 3px; }
+    .m-mental-scroll .mental-table td:first-child { padding-left: 10px; font-size: 12px; font-weight: 600; min-width: 75px; }
 
     /* settings */
     .m-settings-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
@@ -504,9 +504,9 @@
     <div class="m-scroll" style="flex:1;min-height:0">
       <table class="habit-table"><thead id="mh-head"></thead><tbody id="mh-body"></tbody></table>
     </div>
-    <div style="flex-shrink:0;border-top:1px solid var(--border);padding:6px 12px 8px">
-      <div class="m-sec" style="padding:0 0 4px">Progreso diario</div>
-      <canvas id="m-hchart-t" height="70"></canvas>
+    <div style="flex-shrink:0;height:100px;overflow:hidden;border-top:1px solid var(--border);padding:4px 12px 6px">
+      <div class="m-sec" style="padding:0 0 3px">Progreso diario</div>
+      <canvas id="m-hchart-t"></canvas>
     </div>
   </div>
 
@@ -520,10 +520,10 @@
     <div class="m-mental-scroll" style="flex:1;min-height:0">
       <table class="mental-table"><thead id="mm-head2"></thead><tbody id="mm-body2"></tbody></table>
     </div>
-    <div style="flex-shrink:0;border-top:1px solid var(--border);padding:6px 12px 8px">
-      <div class="m-sec" style="padding:0 0 4px">Evolución mental</div>
-      <canvas id="m-mchart2" height="90"></canvas>
-      <div id="m-mchart-legend2" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
+    <div style="flex-shrink:0;height:120px;overflow:hidden;border-top:1px solid var(--border);padding:4px 12px 6px">
+      <div class="m-sec" style="padding:0 0 3px">Evolución mental</div>
+      <canvas id="m-mchart2"></canvas>
+      <div id="m-mchart-legend2" style="display:flex;gap:10px;justify-content:center;margin-top:3px;font-size:9px;color:var(--muted)"></div>
     </div>
   </div>
 
@@ -860,11 +860,12 @@ function drawHabitChart(id,y,m){
   const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
   const ctx=canvas.getContext('2d');
   const W=canvas.parentElement.clientWidth||canvas.offsetWidth;
-  const H=canvas.parentElement.clientHeight-4||100;
-  canvas.width=W*devicePixelRatio; canvas.height=Math.max(H,40)*devicePixelRatio;
-  canvas.style.width=W+'px'; canvas.style.height=Math.max(H,40)+'px';
+  // use canvas's own offsetHeight if already set, else parent minus label space
+  const H=canvas.offsetHeight>10?canvas.offsetHeight:(canvas.parentElement.clientHeight-22||80);
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.clearRect(0,0,W,Math.max(H,40));
+  ctx.clearRect(0,0,W,H);
 
   const days=dim(y,m),pcts=[];
   for(let d=1;d<=days;d++){
@@ -905,11 +906,11 @@ function drawMentalChart(id,y,m){
   const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
   const ctx=canvas.getContext('2d');
   const W=canvas.parentElement.clientWidth||canvas.offsetWidth;
-  const H=canvas.parentElement.clientHeight-28||90;
-  canvas.width=W*devicePixelRatio; canvas.height=Math.max(H,40)*devicePixelRatio;
-  canvas.style.width=W+'px'; canvas.style.height=Math.max(H,40)+'px';
+  const H=canvas.offsetHeight>10?canvas.offsetHeight:(canvas.parentElement.clientHeight-22||80);
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.clearRect(0,0,W,Math.max(H,40));
+  ctx.clearRect(0,0,W,H);
 
   const days=dim(y,m);
   const seriesData=MR.map((_,ri)=>{
