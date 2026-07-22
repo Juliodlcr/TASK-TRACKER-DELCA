@@ -1090,35 +1090,39 @@ function addHabit(){
 function startExport(){
   const y=Y,m=M,days=dim(y,m),ws=weeks(y,m),{pct}=calcStats(y,m);
   let rows='';
-  S.habits.forEach(h=>{
+  S.habits.forEach((h,hi)=>{
     let done=0,cells='';
     ws.forEach((w,wi)=>w.days.forEach(d=>{
       const c=!!S.checks[ck(y,m,d,h.id)];if(c)done++;
-      cells+=`<div style="width:12px;height:12px;border-radius:3px;background:${c?WC[wi]:'#1a1a1a'};border:1px solid #2a2a2a;display:inline-block;margin:1px"></div>`;
+      cells+=`<div style="width:12px;height:12px;border-radius:3px;background:${c?WC[wi]:'#ebebeb'};border:1px solid #d4d4d4;display:inline-block;margin:1px"></div>`;
     }));
     const p=Math.round(done/days*100);
-    rows+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-      <span style="width:140px;font-size:10px;color:#f0f0f0;flex-shrink:0">${h.name}</span>
+    rows+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid #f0f0f0">
+      <span style="width:150px;font-size:11px;color:#111;flex-shrink:0;font-weight:500">${stripEmoji(h.name)}</span>
       <div style="display:flex;flex-wrap:wrap;gap:1px;flex:1">${cells}</div>
-      <span style="width:30px;text-align:right;font-size:10px;font-weight:700;color:${h.color}">${p}%</span>
+      <span style="width:34px;text-align:right;font-size:11px;font-weight:700;color:#111">${p}%</span>
     </div>`;
   });
   document.getElementById('share-card').innerHTML=`
-    <div style="background:#080808;padding:28px;border-radius:14px;width:720px;font-family:-apple-system,sans-serif">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div><div style="font-size:18px;font-weight:800;color:#f0f0f0">${MONTHS[m]} ${y}</div>
-        <div style="font-size:10px;color:#555;margin-top:2px">Habit Tracker</div></div>
-        <div style="text-align:right"><div style="font-size:30px;font-weight:800;color:#22c55e">${pct}%</div>
-        <div style="font-size:10px;color:#555">progreso</div></div>
+    <div style="background:#ffffff;padding:32px;border-radius:16px;width:720px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #e5e5e5">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+        <div>
+          <div style="font-size:20px;font-weight:800;color:#111;letter-spacing:-0.02em">${MONTHS[m]} ${y}</div>
+          <div style="font-size:11px;color:#888;margin-top:3px;letter-spacing:.04em;text-transform:uppercase">Habit Tracker DELCA</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:36px;font-weight:800;color:#111;letter-spacing:-0.03em;line-height:1">${pct}%</div>
+          <div style="font-size:10px;color:#888;margin-top:2px">progreso del mes</div>
+        </div>
       </div>
-      <div style="background:#1a1a1a;border-radius:999px;height:5px;margin-bottom:18px">
-        <div style="width:${pct}%;height:5px;border-radius:999px;background:linear-gradient(90deg,#16a34a,#22c55e)"></div>
+      <div style="background:#ebebeb;border-radius:999px;height:4px;margin-bottom:22px">
+        <div style="width:${pct}%;height:4px;border-radius:999px;background:#111"></div>
       </div>
       ${rows}
-      <div style="margin-top:16px;font-size:9px;color:#333;text-align:center">✦ habit tracker</div>
+      <div style="margin-top:18px;font-size:9px;color:#bbb;text-align:center;letter-spacing:.08em;text-transform:uppercase">habit tracker delca</div>
     </div>`;
   if(typeof html2canvas==='undefined'){alert('Necesitas conexión la primera vez.');return;}
-  html2canvas(document.getElementById('share-card').firstElementChild,{backgroundColor:'#080808',scale:2,useCORS:true}).then(c=>{
+  html2canvas(document.getElementById('share-card').firstElementChild,{backgroundColor:'#ffffff',scale:2,useCORS:true}).then(c=>{
     const url=c.toDataURL('image/png');
     document.getElementById('export-preview').src=url;
     document.getElementById('export-modal').classList.add('show');
