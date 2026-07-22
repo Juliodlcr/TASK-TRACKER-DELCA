@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#080808" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Habit Tracker DELCA" />
   <title>Habit Tracker DELCA</title>
   <link rel="manifest" href="manifest.json" />
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg:      #111316;
-      --surface: #1a1d22;
-      --surf2:   #22252c;
-      --border:  #2e3138;
-      --text:    #e2e4e9;
-      --muted:   #6b6f7a;
-      --accent:  #22c55e;
-      --red:     #f87171;
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surf2:   #ebebeb;
+      --border:  #d4d4d4;
+      --text:    #111111;
+      --muted:   #888888;
+      --accent:  #111111;
+      --red:     #cc0000;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg); color: var(--text);
@@ -74,7 +74,7 @@
     /* progress inline */
     .topbar-prog { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 200px; }
     .p-track { flex: 1; background: var(--surf2); border-radius: 999px; height: 5px; }
-    .p-fill  { height: 5px; border-radius: 999px; background: linear-gradient(90deg,#16a34a,#22c55e); transition: width .4s; }
+    .p-fill  { height: 5px; border-radius: 999px; background: linear-gradient(90deg,#333333,#111111); transition: width .4s; }
     .p-pct   { font-size: 11px; font-weight: 700; color: var(--accent); width: 30px; text-align: right; }
 
     .topbar-right { display: flex; align-items: center; gap: 8px; }
@@ -84,7 +84,7 @@
       font-size: 11px; font-weight: 600; cursor: pointer;
       background: var(--surf2); color: var(--text); transition: opacity .15s;
     }
-    .act-btn.primary { background: var(--accent); color: #000; border-color: transparent; }
+    .act-btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
     .act-btn svg { width: 12px; height: 12px; }
 
     /* ── BODY: 4 rows ── */
@@ -182,7 +182,7 @@
       border: 1px solid var(--border); background: none;
       color: var(--text); font-size: 8px; cursor: pointer; transition: all .1s;
     }
-    .sbtn.on { border-color: transparent; color: #fff; font-weight: 700; }
+    .sbtn.on { border-color: transparent; font-weight: 700; }
 
     /* mindset scores */
     .ms-item { display: flex; flex-direction: column; gap: 3px; }
@@ -252,7 +252,7 @@
     }
     .m-prog-lbl { font-size: 9px; color: var(--muted); white-space: nowrap; }
     .m-prog-track { flex: 1; background: var(--surf2); border-radius: 999px; height: 5px; }
-    .m-prog-fill  { height: 5px; border-radius: 999px; background: linear-gradient(90deg,#16a34a,#22c55e); transition: width .4s; }
+    .m-prog-fill  { height: 5px; border-radius: 999px; background: linear-gradient(90deg,#333333,#111111); transition: width .4s; }
     .m-prog-pct   { font-size: 10px; font-weight: 700; color: var(--accent); width: 28px; text-align: right; }
 
     /* mobile section label */
@@ -323,7 +323,7 @@
     #export-preview { width:100%; border-radius:8px; display:block; margin-bottom:12px; }
     .modal-actions { display:flex; gap:8px; }
     .modal-actions button { flex:1; padding:11px; border-radius:9px; border:none; cursor:pointer; font-size:12px; font-weight:600; }
-    #btn-download { background:var(--accent); color:#000; }
+    #btn-download { background:var(--accent); color:#fff; }
     #btn-close-modal { background:var(--surf2); color:var(--text); }
 
     /* settings modal */
@@ -343,7 +343,7 @@
     #install-banner.show { display:flex; }
     #install-banner p { flex:1; font-size:11px; }
     #install-banner button { padding:6px 11px; border-radius:7px; border:none; cursor:pointer; font-size:11px; font-weight:600; }
-    #btn-install { background:var(--accent); color:#000; }
+    #btn-install { background:var(--accent); color:#fff; }
     #btn-dismiss { background:var(--surf2); color:var(--text); }
 
     #share-card { position:fixed; left:-9999px; top:0; width:760px; }
@@ -564,19 +564,19 @@
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const WC = ['#7c3aed','#0891b2','#db2777','#d97706','#16a34a'];
-const BC = ['#a78bfa','#22d3ee','#f472b6','#fbbf24','#4ade80','#818cf8','#34d399','#fb923c','#60a5fa','#e879f9'];
-const MC_COLORS = ['#22c55e','#38bdf8','#f472b6']; // Mañana=verde, Tarde=azul, Noche=rosa
+const WC = ['#111111','#333333','#555555','#777777','#999999'];
+const BC = ['#111111','#333333','#555555','#777777','#999999','#222222','#444444','#666666','#888888','#aaaaaa'];
+const MC_COLORS = ['#111111','#555555','#999999']; // Mañana=negro, Tarde=gris, Noche=gris claro
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
 const CHK = `<svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>`;
 const DEF = [
-  {name:'Early start 🌅',color:'#22c55e'},{name:'Gym 💪',color:'#16a34a'},
-  {name:'Learn 📚',color:'#15803d'},{name:'Plan top 3 📋',color:'#22c55e'},
-  {name:'Track money 💰',color:'#16a34a'},{name:'Deep work 🎯',color:'#4ade80'},
-  {name:'Alcohol free 🍃',color:'#059669'},{name:'No socials 📵',color:'#34d399'},
-  {name:'Journal ✍️',color:'#86efac'},{name:'Cold shower 🚿',color:'#22c55e'},
+  {name:'Early start 🌅',color:'#111111'},{name:'Gym 💪',color:'#333333'},
+  {name:'Learn 📚',color:'#555555'},{name:'Plan top 3 📋',color:'#111111'},
+  {name:'Track money 💰',color:'#333333'},{name:'Deep work 🎯',color:'#555555'},
+  {name:'Alcohol free 🍃',color:'#777777'},{name:'No socials 📵',color:'#555555'},
+  {name:'Journal ✍️',color:'#333333'},{name:'Cold shower 🚿',color:'#111111'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
@@ -760,7 +760,7 @@ function updateSumCells(dayKey){
 
 // ── MENTAL TABLE ──────────────────────────────────────────────────────────
 function mentalColor(v){
-  const s=['#333','#2d4a2d','#1e6b1e','#16a34a','#16a34a','#22c55e','#22c55e','#4ade80','#4ade80','#86efac','#bbf7d0'];
+  const s=['#e5e5e5','#cccccc','#b3b3b3','#999999','#808080','#666666','#555555','#444444','#333333','#222222','#111111'];
   return s[Math.min(v,s.length-1)];
 }
 
@@ -778,7 +778,8 @@ function buildMentalTable(headId,bodyId,y,m){
     let row=`<tr><td>${rn}</td>`;
     ws.forEach(w=>w.days.forEach(d=>{
       const k=mk(y,m,d,ri),v=S.mental[k]??null;
-      const ms=v!==null?`background:${mentalColor(v)};border-color:transparent`:'';
+      const tc=v!==null?(v>=5?'#fff':'#111'):'';
+      const ms=v!==null?`background:${mentalColor(v)};border-color:transparent;color:${tc}`:'';
       row+=`<td><button class="sbtn${v!==null?' on':''}" style="${ms}" onclick="cycleMental('${k}',this)">${v!==null?v:'·'}</button></td>`;
     }));
     row+='</tr>';body+=row;
@@ -789,8 +790,8 @@ function buildMentalTable(headId,bodyId,y,m){
 function cycleMental(key,btn){
   const cur=S.mental[key]??null,next=cur===null?0:cur===10?null:cur+1;
   S.mental[key]=next;save();
-  if(next===null){btn.className='sbtn';btn.style.background='';btn.style.borderColor='';btn.textContent='·';}
-  else{btn.className='sbtn on';btn.style.background=mentalColor(next);btn.style.borderColor='transparent';btn.textContent=next;}
+  if(next===null){btn.className='sbtn';btn.style.background='';btn.style.borderColor='';btn.style.color='';btn.textContent='·';}
+  else{btn.className='sbtn on';btn.style.background=mentalColor(next);btn.style.borderColor='transparent';btn.style.color=next>=5?'#fff':'#111';btn.textContent=next;}
   renderMindset();
   requestAnimationFrame(()=>{drawMentalChart('d-mchart',Y,M);drawMentalChart('m-mchart',Y,M);});
 }
@@ -821,21 +822,21 @@ function drawHabitChart(id,y,m){
 
   [0,.25,.5,.75,1].forEach(v=>{
     const yy=py(v);
-    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='8px sans-serif';
+    ctx.fillStyle='rgba(0,0,0,.4)';ctx.font='8px sans-serif';
     ctx.textAlign='right';
     ctx.fillText(Math.round(v*100)+'%', pad.l-4, Math.max(yy+3, 9));
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
-  grad.addColorStop(0,'rgba(34,197,94,.3)');grad.addColorStop(1,'rgba(34,197,94,.02)');
+  grad.addColorStop(0,'rgba(17,17,17,.18)');grad.addColorStop(1,'rgba(17,17,17,.02)');
   ctx.beginPath();
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.lineTo(px(days-1),H-pad.b);ctx.lineTo(pad.l,H-pad.b);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
 
-  ctx.beginPath();ctx.strokeStyle='#22c55e';ctx.lineWidth=1.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#111111';ctx.lineWidth=1.5;ctx.lineJoin='round';
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.stroke();
 }
@@ -868,9 +869,9 @@ function drawMentalChart(id,y,m){
 
   [0,5,10].forEach(v=>{
     const yy=py(v);
-    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='8px sans-serif';
+    ctx.fillStyle='rgba(0,0,0,.4)';ctx.font='8px sans-serif';
     ctx.textAlign='right';
     ctx.fillText(v, pad.l-4, Math.max(yy+3, 9));
   });
