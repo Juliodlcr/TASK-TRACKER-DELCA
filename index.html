@@ -958,7 +958,7 @@ function renderAnalysisPanel(listId,y,m){
     let done=0;for(let d=1;d<=days;d++)if(S.checks[ck(y,m,d,h.id)])done++;
     const p=Math.round(done/days*100),c=h.color||BC[i%BC.length];
     html+=`<div class="a-item">
-      <div class="a-row"><span class="a-name">${h.name}</span><span class="a-pct">${p}%</span></div>
+      <div class="a-row"><span class="a-name">${stripEmoji(h.name)}</span><span class="a-pct">${p}%</span></div>
       <div class="a-track"><div class="a-fill" style="width:${p}%;background:${c}"></div></div>
     </div>`;
   });
@@ -1006,7 +1006,7 @@ function renderMobileAnalysis(){
     let done=0;for(let d=1;d<=days;d++)if(S.checks[ck(Y,M,d,h.id)])done++;
     const p=Math.round(done/days*100),c=h.color||BC[i%BC.length];
     html+=`<div class="ma-item">
-      <div class="ma-row"><span>${h.name}</span><span class="ma-pct">${p}%</span></div>
+      <div class="ma-row"><span>${stripEmoji(h.name)}</span><span class="ma-pct">${p}%</span></div>
       <div class="ma-track"><div class="ma-fill" style="width:${p}%;background:${c}"></div></div>
     </div>`;
   });
