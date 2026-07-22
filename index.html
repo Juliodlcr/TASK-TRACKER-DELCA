@@ -503,7 +503,7 @@
     <div class="m-sec">Mis Hábitos</div>
     <div class="m-scroll" style="flex:1;min-height:0">
       <table class="habit-table"><thead id="mh-head"></thead><tbody id="mh-body"></tbody></table>
-      <div style="height:100px;overflow:hidden;border-top:1px solid var(--border);padding:4px 0 6px;margin-top:2px">
+      <div style="position:sticky;left:0;height:104px;overflow:hidden;border-top:1px solid var(--border);padding:4px 0 6px;margin-top:2px;background:var(--bg)">
         <div class="m-sec" style="padding:0 10px 3px">Progreso diario</div>
         <canvas id="m-hchart-t"></canvas>
       </div>
@@ -857,11 +857,12 @@ function cycleMental(key,btn){
 
 // ── HABITS CHART ──────────────────────────────────────────────────────────
 function drawHabitChart(id,y,m){
-  const canvas=document.getElementById(id); if(!canvas||!canvas.offsetWidth)return;
+  const canvas=document.getElementById(id); if(!canvas)return;
   const ctx=canvas.getContext('2d');
-  const W=canvas.parentElement.clientWidth||canvas.offsetWidth;
-  // use canvas's own offsetHeight if already set, else parent minus label space
-  const H=canvas.offsetHeight>10?canvas.offsetHeight:(canvas.parentElement.clientHeight-22||80);
+  // m-hchart-t lives inside a horizontal-scroll container — use viewport width
+  const W=id==='m-hchart-t' ? window.innerWidth : (canvas.parentElement.clientWidth||canvas.offsetWidth);
+  if(!W)return;
+  const H=id==='m-hchart-t' ? 78 : (canvas.offsetHeight>10?canvas.offsetHeight:(canvas.parentElement.clientHeight-22||80));
   canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
@@ -874,9 +875,10 @@ function drawHabitChart(id,y,m){
   }
   if(pcts.length<2)return;
 
-  // align chart with grid columns: skip name col (110px) + row padding (10px)
+  // for mobile tracker chart: no column alignment needed, use small padding
   const COL_NAME=110, COL_PCT=36, ROW_PAD=10;
-  const pad={t:6,b:16,l:COL_NAME+ROW_PAD,r:COL_PCT+ROW_PAD};
+  const isMobileT = id==='m-hchart-t';
+  const pad=isMobileT ? {t:4,b:14,l:28,r:8} : {t:6,b:16,l:COL_NAME+ROW_PAD,r:COL_PCT+ROW_PAD};
   const gW=W-pad.l-pad.r, gH=Math.max(H,40)-pad.t-pad.b;
   const px=i=>pad.l+(i/(days-1))*gW, py=v=>pad.t+gH*(1-v);
 
