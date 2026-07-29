@@ -1,4 +1,4 @@
-const CACHE = 'habit-tracker-v4';
+const CACHE = 'habit-tracker-v8';
 const BASE = '';
 const ASSETS = [
   BASE + '/',
@@ -23,7 +23,15 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/index.html')))
-  );
+  const url = new URL(e.request.url);
+  const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
+  if (isHTML) {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => { caches.open(CACHE).then(c => c.put(e.request, res.clone())); return res; })
+        .catch(() => caches.match(e.request).then(r => r || caches.match('/index.html')))
+    );
+  } else {
+    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+  }
 });

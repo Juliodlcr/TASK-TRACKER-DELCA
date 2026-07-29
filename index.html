@@ -517,13 +517,22 @@
       <span style="font-size:11px;color:var(--muted)" id="m-mt-lbl"></span>
     </div>
     <div class="m-sec">Registro</div>
-    <div class="m-mental-scroll" style="flex:1;min-height:0">
+    <div class="m-mental-scroll" style="flex-shrink:0">
       <table class="mental-table"><thead id="mm-head2"></thead><tbody id="mm-body2"></tbody></table>
     </div>
-    <div style="flex-shrink:0;height:120px;overflow:hidden;border-top:1px solid var(--border);padding:4px 12px 6px">
-      <div class="m-sec" style="padding:0 0 3px">Evolución mental</div>
-      <canvas id="m-mchart2"></canvas>
-      <div id="m-mchart-legend2" style="display:flex;gap:10px;justify-content:center;margin-top:3px;font-size:9px;color:var(--muted)"></div>
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:10px 14px 8px;display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div class="m-sec" style="padding:2px 0 7px">Reflexión del día</div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px">
+          <p id="stoic-quote" style="font-size:12px;line-height:1.65;color:var(--text);font-style:italic"></p>
+          <p id="stoic-author" style="font-size:10px;color:var(--muted);margin-top:7px;text-align:right"></p>
+        </div>
+      </div>
+      <div>
+        <div class="m-sec" style="padding:2px 0 4px">Evolución mental</div>
+        <canvas id="m-mchart2" height="70"></canvas>
+        <div id="m-mchart-legend2" style="display:flex;gap:10px;justify-content:center;margin-top:3px;font-size:9px;color:var(--muted)"></div>
+      </div>
     </div>
   </div>
 
@@ -1014,10 +1023,54 @@ function renderStats(){
   if(el)el.textContent=`${pct}% completado`;
 }
 
+// ── STOIC QUOTES ──────────────────────────────────────────────────────────
+const STOIC = [
+  {q:'«No busques que lo que sucede suceda como quieres; quiere que lo que sucede suceda como sucede, y serás feliz.»',a:'Epicteto'},
+  {q:'«Tenemos dos oídos y una boca para escuchar el doble de lo que hablamos.»',a:'Epicteto'},
+  {q:'«El hombre sufrirá lo que decida sufrir.»',a:'Séneca'},
+  {q:'«No es que los tiempos sean difíciles; es que somos débiles.»',a:'Séneca'},
+  {q:'«Comienza haciendo lo necesario, luego lo posible, y de repente estarás haciendo lo imposible.»',a:'Marco Aurelio'},
+  {q:'«No pierdas el resto de tu vida en pensamientos acerca de otras personas.»',a:'Marco Aurelio'},
+  {q:'«Pierde tu tiempo y habrás perdido todo.»',a:'Séneca'},
+  {q:'«Lo que nos perturba no son las cosas, sino las opiniones que tenemos sobre ellas.»',a:'Epicteto'},
+  {q:'«Concéntrate en lo que está en tu mano; el resto, acéptalo.»',a:'Epicteto'},
+  {q:'«Cada día es una nueva vida para el sabio.»',a:'Séneca'},
+  {q:'«El obstáculo en el camino se convierte en el camino.»',a:'Marco Aurelio'},
+  {q:'«La vida es larga si sabes cómo usarla.»',a:'Séneca'},
+  {q:'«No hay viento favorable para el marinero que no sabe adónde va.»',a:'Séneca'},
+  {q:'«Recibe sin orgullo, suelta sin lucha.»',a:'Marco Aurelio'},
+  {q:'«El mayor obstáculo para vivir es la expectativa, que depende del mañana y pierde el hoy.»',a:'Séneca'},
+  {q:'«Sé tolerante con los demás y exigente contigo mismo.»',a:'Marco Aurelio'},
+  {q:'«Haz cada acto de tu vida como si fuera el último.»',a:'Marco Aurelio'},
+  {q:'«El dolor es inevitable, el sufrimiento es opcional.»',a:'Epicteto'},
+  {q:'«La felicidad de tu vida depende de la calidad de tus pensamientos.»',a:'Marco Aurelio'},
+  {q:'«El valiente desea las cosas difíciles.»',a:'Aristóteles'},
+  {q:'«El primer paso hacia la sabiduría es conocerse a uno mismo.»',a:'Sócrates'},
+  {q:'«El hombre que mueve montañas comienza cargando pequeñas piedras.»',a:'Confucio'},
+  {q:'«Actúa bien en el presente, sin importar lo que hiciste ayer.»',a:'Marco Aurelio'},
+  {q:'«No te quejes de la nieve en el techo del vecino cuando tu umbral está sucio.»',a:'Confucio'},
+  {q:'«Nunca te arrepientas de haber sido bueno.»',a:'Séneca'},
+  {q:'«Prefiero ser derrotado diciendo la verdad que vencer con una mentira.»',a:'Epicteto'},
+  {q:'«La fortaleza no se mide por lo que has logrado, sino por lo que has superado.»',a:'Epicteto'},
+  {q:'«Sé tú mismo el cambio que quieres ver en el mundo.»',a:'Mahatma Gandhi'},
+  {q:'«No busques que los eventos sucedan como deseas; desea que sucedan como son.»',a:'Epicteto'},
+  {q:'«Lo que no te mata, te hace más fuerte.»',a:'Friedrich Nietzsche'},
+];
+
+function renderStoicQuote(){
+  const day = Math.floor(Date.now() / 86400000);
+  const {q,a} = STOIC[day % STOIC.length];
+  const qEl = document.getElementById('stoic-quote');
+  const aEl = document.getElementById('stoic-author');
+  if(qEl) qEl.textContent = q;
+  if(aEl) aEl.textContent = '— ' + a;
+}
+
 // ── MOBILE MENTAL ─────────────────────────────────────────────────────────
 function renderMobileMental(){
   document.getElementById('m-mt-lbl').textContent=`${MONTHS[M]} ${Y}`;
   buildMentalTable('mm-head2','mm-body2',Y,M);
+  renderStoicQuote();
   requestAnimationFrame(()=>drawMentalChart('m-mchart2',Y,M));
 }
 
