@@ -424,6 +424,7 @@
       <div class="p-track"><div class="p-fill" id="d-pfill" style="width:0%"></div></div>
     </div>
     <div class="topbar-right">
+      <button id="theme-btn-d" class="act-btn" onclick="toggleTheme()"></button>
       <button class="act-btn" onclick="openSettings()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Hábito
@@ -1218,8 +1219,11 @@ const MOON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 function applyTheme(dark){
   if(dark){ document.documentElement.classList.add('dark'); }
   else { document.documentElement.classList.remove('dark'); }
+  const icon = dark ? SUN_SVG : MOON_SVG;
   const btn = document.getElementById('theme-btn');
-  if(btn) btn.innerHTML = dark ? SUN_SVG : MOON_SVG;
+  if(btn) btn.innerHTML = icon;
+  const btnD = document.getElementById('theme-btn-d');
+  if(btnD) btnD.innerHTML = icon;
 }
 
 function toggleTheme(){
