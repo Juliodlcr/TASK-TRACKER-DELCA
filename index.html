@@ -489,6 +489,27 @@
     </div>
   </div>
 
+  <!-- MENTAL TAB -->
+  <div class="m-page" id="mp-mental">
+    <div class="m-hdr">
+      <h1>Estado Mental</h1>
+      <span style="font-size:11px;color:var(--muted)" id="m-mn-lbl"></span>
+    </div>
+    <div class="m-mental-scroll">
+      <table class="mental-table"><thead id="mm-head"></thead><tbody id="mm-body"></tbody></table>
+    </div>
+    <div style="padding:10px 16px 10px;overflow-y:auto;flex:1;min-height:0">
+      <div class="m-sec" style="padding:4px 0 8px">Reflexión del día</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+        <p id="stoic-quote" style="font-size:13px;line-height:1.6;color:var(--text);font-style:italic"></p>
+        <p id="stoic-author" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:right"></p>
+      </div>
+      <div class="m-sec" style="padding:4px 0 8px">Evolución mental</div>
+      <canvas id="m-mchart" height="80"></canvas>
+      <div id="m-mchart-legend" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
+    </div>
+  </div>
+
   <!-- ANALYSIS TAB -->
   <div class="m-page" id="mp-analysis">
     <div class="m-hdr">
@@ -501,22 +522,6 @@
     </div>
     <div class="m-sec">Por hábito</div>
     <div class="m-analysis" id="m-analysis-list"></div>
-    <div class="m-sec">Estado Mental</div>
-    <div class="m-mental-scroll">
-      <table class="mental-table"><thead id="mm-head"></thead><tbody id="mm-body"></tbody></table>
-    </div>
-    <div class="m-chart-wrap" style="padding-top:0">
-      <div class="m-sec" style="padding:6px 0 4px">Evolución mental</div>
-      <canvas id="m-mchart" height="80"></canvas>
-      <div id="m-mchart-legend" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
-    </div>
-    <div style="padding:12px 16px 20px">
-      <div class="m-sec" style="padding:6px 0 8px">Reflexión del día</div>
-      <div id="stoic-quote-box" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
-        <p id="stoic-quote" style="font-size:13px;line-height:1.6;color:var(--text);font-style:italic"></p>
-        <p id="stoic-author" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:right"></p>
-      </div>
-    </div>
   </div>
 
   <!-- SETTINGS TAB -->
@@ -540,6 +545,10 @@
     <button class="active" onclick="showTab('tracker')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Tracker
+    </button>
+    <button onclick="showTab('mental')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      Mental
     </button>
     <button onclick="showTab('analysis')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -626,8 +635,9 @@ function showTab(id) {
   document.querySelectorAll('.m-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.m-nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('mp-'+id).classList.add('active');
-  const idx={tracker:0,analysis:1,settings:2}[id];
+  const idx={tracker:0,mental:1,analysis:2,settings:3}[id];
   document.querySelectorAll('.m-nav button')[idx].classList.add('active');
+  if(id==='mental') renderMobileMental();
   if(id==='analysis') renderMobileAnalysis();
   if(id==='settings') renderSettings('hedit-list','add-btn');
 }
@@ -971,6 +981,14 @@ function renderStats(){
   if(el)el.textContent=`${pct}% completado`;
 }
 
+// ── MOBILE MENTAL ─────────────────────────────────────────────────────────
+function renderMobileMental(){
+  document.getElementById('m-mn-lbl').textContent=`${MONTHS[M]} ${Y}`;
+  buildMentalTable('mm-head','mm-body',Y,M);
+  renderStoicQuote();
+  requestAnimationFrame(()=>{drawMentalChart('m-mchart',Y,M);});
+}
+
 // ── MOBILE ANALYSIS ───────────────────────────────────────────────────────
 function renderMobileAnalysis(){
   const days=dim(Y,M);
@@ -985,9 +1003,7 @@ function renderMobileAnalysis(){
     </div>`;
   });
   document.getElementById('m-analysis-list').innerHTML=html;
-  buildMentalTable('mm-head','mm-body',Y,M);
-  renderStoicQuote();
-  requestAnimationFrame(()=>{drawHabitChart('m-hchart',Y,M);drawMentalChart('m-mchart',Y,M);});
+  requestAnimationFrame(()=>{drawHabitChart('m-hchart',Y,M);});
 }
 
 // ── STOIC QUOTES ──────────────────────────────────────────────────────────
@@ -1134,6 +1150,12 @@ function renderAll(){
   renderAnalysisPanel('d-analysis',Y,M);
   renderMindset();
   renderStats();
+  const activeTab=document.querySelector('.m-page.active');
+  if(activeTab){
+    const tid=activeTab.id.replace('mp-','');
+    if(tid==='mental') renderMobileMental();
+    if(tid==='analysis') renderMobileAnalysis();
+  }
   requestAnimationFrame(()=>{
     drawHabitChart('d-hchart',Y,M);
     drawMentalChart('d-mchart',Y,M);
