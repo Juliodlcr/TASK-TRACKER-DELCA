@@ -103,6 +103,7 @@
       background: var(--surf2); color: var(--text); transition: opacity .15s;
     }
     .act-btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
+    :root.dark .act-btn.primary { color: #111; }
     .act-btn svg { width: 12px; height: 12px; }
 
     /* ── BODY: 4 rows ── */
@@ -730,7 +731,7 @@ function buildHabitTable(headId, bodyId, y, m) {
   let h='<tr><th style="width:110px;text-align:left;padding-right:8px">Hábito</th>';
   ws.forEach((w,wi)=>{
     const last=wi===ws.length-1;
-    h+=`<th colspan="${w.days.length}" class="wlbl${last?'':' week-end'}" style="background:${wc(wi)};color:#fff">Sem ${wi+1}</th>`;
+    h+=`<th colspan="${w.days.length}" class="wlbl${last?'':' week-end'}" style="background:${wc(wi)};color:${isDark()?'#111':'#fff'}">Sem ${wi+1}</th>`;
   });
   h+='<th style="width:36px;font-size:8px;color:var(--muted)">%</th></tr><tr><th></th>';
   // day header row
@@ -861,7 +862,7 @@ function mentalColor(v){
 function buildMentalTable(headId,bodyId,y,m){
   const ws=weeks(y,m),first=fdow(y,m);
   let h='<tr><th style="width:110px"></th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${wc(wi)};color:#fff">Sem ${wi+1}</th>`);
+  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${wc(wi)};color:${isDark()?'#111':'#fff'}">Sem ${wi+1}</th>`);
   h+='</tr><tr><th></th>';
   ws.forEach((w,wi)=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th class="day-th" style="background:${wc(wi)}18;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;}));
   h+='</tr>';
@@ -901,7 +902,8 @@ function drawHabitChart(id,y,m){
   canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0,0,W,H);
 
   const days=dim(y,m),pcts=[];
   for(let d=1;d<=days;d++){
@@ -953,7 +955,8 @@ function drawMentalChart(id,y,m){
   canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0,0,W,H);
 
   const days=dim(y,m);
   const seriesData=MR.map((_,ri)=>{
