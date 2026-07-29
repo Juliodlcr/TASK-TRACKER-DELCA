@@ -127,7 +127,7 @@
     .habit-table td { padding: 2px 2px; text-align: center; overflow: hidden; }
     .habit-row td:first-child {
       text-align: left; padding-right: 8px;
-      font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-size: 10px; overflow: hidden;
       color: var(--text); font-weight: 500;
     }
     /* week header — solid color block */
@@ -554,12 +554,28 @@ const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
 const CHK = `<svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>`;
+
+const ICONS = [
+  `<circle cx="7" cy="7" r="2.2"/><line x1="7" y1="1.5" x2="7" y2="3"/><line x1="7" y1="11" x2="7" y2="12.5"/><line x1="1.5" y1="7" x2="3" y2="7"/><line x1="11" y1="7" x2="12.5" y2="7"/><line x1="3.1" y1="3.1" x2="4.1" y2="4.1"/><line x1="9.9" y1="9.9" x2="10.9" y2="10.9"/><line x1="10.9" y1="3.1" x2="9.9" y2="4.1"/><line x1="4.1" y1="9.9" x2="3.1" y2="10.9"/>`,
+  `<line x1="2" y1="7" x2="12" y2="7"/><rect x="1" y="5.5" width="2" height="3" rx="0.5"/><rect x="11" y="5.5" width="2" height="3" rx="0.5"/><rect x="3" y="4.5" width="2" height="5" rx="0.5"/><rect x="9" y="4.5" width="2" height="5" rx="0.5"/>`,
+  `<path d="M7 12V3C7 3 5 2 2 2v10c3 0 5 1 5 1z"/><path d="M7 12V3c0 0 2-1 5-1v10c-3 0-5 1-5 1z"/>`,
+  `<line x1="5" y1="4" x2="12" y2="4"/><line x1="5" y1="7" x2="12" y2="7"/><line x1="5" y1="10" x2="9" y2="10"/><polyline points="2,3.5 3,4.5 5,2.5"/><polyline points="2,6.5 3,7.5 5,5.5"/>`,
+  `<polyline points="1,11 5,7 8,9 13,3"/><polyline points="9,3 13,3 13,7"/>`,
+  `<circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="3"/><circle cx="7" cy="7" r="1"/>`,
+  `<path d="M3 12C3 12 4 6.5 7 4.5C10 2.5 12 2 12 2C12 2 11.5 4 9.5 7C7.5 10 3 12 3 12z"/>`,
+  `<path d="M4.5 2h2l1 2.5-1.5 1.5a7 7 0 0 0 1.8 1.8L9.5 6.5 12 7.5v2a1 1 0 0 1-1 1A10 10 0 0 1 2.5 4a1 1 0 0 1 1-1z"/><line x1="1.5" y1="1.5" x2="12.5" y2="12.5"/>`,
+  `<path d="M9.5 2.5l2 2-7 7H2.5v-2z"/><line x1="7.5" y1="4.5" x2="9.5" y2="6.5"/>`,
+  `<path d="M7 1.5C7 1.5 2 7 2 9.5a5 5 0 0 0 10 0C12 7 7 1.5 7 1.5z"/>`,
+];
+const iconSVG = i => `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.6">${ICONS[i % ICONS.length]}</svg>`;
+const stripEmoji = s => s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}✦✧★☆◆◇]/gu,'').trim();
+
 const DEF = [
-  {name:'Early start 🌅',color:'#22c55e'},{name:'Gym 💪',color:'#16a34a'},
-  {name:'Learn 📚',color:'#15803d'},{name:'Plan top 3 📋',color:'#22c55e'},
-  {name:'Track money 💰',color:'#16a34a'},{name:'Deep work 🎯',color:'#4ade80'},
-  {name:'Alcohol free 🍃',color:'#059669'},{name:'No socials 📵',color:'#34d399'},
-  {name:'Journal ✍️',color:'#86efac'},{name:'Cold shower 🚿',color:'#22c55e'},
+  {name:'Early start',color:'#111111'},{name:'Gym',color:'#333333'},
+  {name:'Learn',color:'#555555'},{name:'Plan top 3',color:'#111111'},
+  {name:'Track money',color:'#333333'},{name:'Deep work',color:'#555555'},
+  {name:'Alcohol free',color:'#777777'},{name:'No socials',color:'#555555'},
+  {name:'Journal',color:'#333333'},{name:'Cold shower',color:'#111111'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
@@ -638,9 +654,10 @@ function buildHabitTable(headId, bodyId, y, m) {
 
   // habit rows
   let body='';
-  S.habits.forEach(hab=>{
+  S.habits.forEach((hab,hi)=>{
     let done=0,tot=0;
-    let row=`<tr class="habit-row"><td>${hab.name}</td>`;
+    const label=`<span style="display:inline-flex;align-items:center;gap:5px;max-width:100%">${iconSVG(hi)}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(stripEmoji(hab.name))}</span></span>`;
+    let row=`<tr class="habit-row"><td>${label}</td>`;
     ws.forEach((w,wi)=>{
       const last=wi===ws.length-1;
       w.days.forEach((d,di)=>{
@@ -908,7 +925,7 @@ function renderAnalysisPanel(listId,y,m){
     let done=0;for(let d=1;d<=days;d++)if(S.checks[ck(y,m,d,h.id)])done++;
     const p=Math.round(done/days*100),c=h.color||BC[i%BC.length];
     html+=`<div class="a-item">
-      <div class="a-row"><span class="a-name">${h.name}</span><span class="a-pct">${p}%</span></div>
+      <div class="a-row"><span class="a-name">${stripEmoji(h.name)}</span><span class="a-pct">${p}%</span></div>
       <div class="a-track"><div class="a-fill" style="width:${p}%;background:${c}"></div></div>
     </div>`;
   });
@@ -956,7 +973,7 @@ function renderMobileAnalysis(){
     let done=0;for(let d=1;d<=days;d++)if(S.checks[ck(Y,M,d,h.id)])done++;
     const p=Math.round(done/days*100),c=h.color||BC[i%BC.length];
     html+=`<div class="ma-item">
-      <div class="ma-row"><span>${h.name}</span><span class="ma-pct">${p}%</span></div>
+      <div class="ma-row"><span>${stripEmoji(h.name)}</span><span class="ma-pct">${p}%</span></div>
       <div class="ma-track"><div class="ma-fill" style="width:${p}%;background:${c}"></div></div>
     </div>`;
   });
