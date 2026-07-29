@@ -510,6 +510,13 @@
       <canvas id="m-mchart" height="80"></canvas>
       <div id="m-mchart-legend" style="display:flex;gap:10px;justify-content:center;margin-top:4px;font-size:9px;color:var(--muted)"></div>
     </div>
+    <div style="padding:12px 16px 20px">
+      <div class="m-sec" style="padding:6px 0 8px">Reflexión del día</div>
+      <div id="stoic-quote-box" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+        <p id="stoic-quote" style="font-size:13px;line-height:1.6;color:var(--text);font-style:italic"></p>
+        <p id="stoic-author" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:right"></p>
+      </div>
+    </div>
   </div>
 
   <!-- SETTINGS TAB -->
@@ -979,7 +986,51 @@ function renderMobileAnalysis(){
   });
   document.getElementById('m-analysis-list').innerHTML=html;
   buildMentalTable('mm-head','mm-body',Y,M);
+  renderStoicQuote();
   requestAnimationFrame(()=>{drawHabitChart('m-hchart',Y,M);drawMentalChart('m-mchart',Y,M);});
+}
+
+// ── STOIC QUOTES ──────────────────────────────────────────────────────────
+const STOIC = [
+  {q:'«No busques que lo que sucede suceda como quieres, sino quiere que lo que sucede suceda como sucede, y serás feliz.»',a:'Epicteto'},
+  {q:'«Tenemos dos oídos y una boca para que podamos escuchar el doble de lo que hablamos.»',a:'Epicteto'},
+  {q:'«El hombre sufrirá lo que decida sufrir.»',a:'Séneca'},
+  {q:'«No es que los tiempos sean difíciles; es que somos débiles.»',a:'Séneca'},
+  {q:'«Comienza haciendo lo necesario, luego lo posible, y de repente estarás haciendo lo imposible.»',a:'Marco Aurelio'},
+  {q:'«No pierdas el resto de tu vida en pensamientos acerca de otras personas.»',a:'Marco Aurelio'},
+  {q:'«Pierde tu tiempo y habrás perdido todo.»',a:'Séneca'},
+  {q:'«Lo que nos perturba no son las cosas, sino las opiniones que tenemos sobre ellas.»',a:'Epicteto'},
+  {q:'«Concéntrate en lo que está en tu mano; el resto, acéptalo.»',a:'Epicteto'},
+  {q:'«Nunca te arrepientas de haber sido bueno.»',a:'Séneca'},
+  {q:'«Cada día es una nueva vida para el sabio.»',a:'Séneca'},
+  {q:'«El obstáculo en el camino se convierte en el camino.»',a:'Marco Aurelio'},
+  {q:'«La vida es larga si sabes cómo usarla.»',a:'Séneca'},
+  {q:'«No hay viento favorable para el marinero que no sabe adónde va.»',a:'Séneca'},
+  {q:'«Recibe sin orgullo, suelta sin lucha.»',a:'Marco Aurelio'},
+  {q:'«Lo que no me mata me fortalece.»',a:'Friedrich Nietzsche'},
+  {q:'«El mayor obstáculo para vivir es la expectativa, que depende del mañana y pierde el hoy.»',a:'Séneca'},
+  {q:'«Sé tolerante con los demás y exigente contigo mismo.»',a:'Marco Aurelio'},
+  {q:'«Haz cada acto de tu vida como si fuera el último.»',a:'Marco Aurelio'},
+  {q:'«El dolor es inevitable, el sufrimiento es opcional.»',a:'Epicteto'},
+  {q:'«La felicidad de tu vida depende de la calidad de tus pensamientos.»',a:'Marco Aurelio'},
+  {q:'«Donde no puedas encontrar placer, no vayas a buscar alegría.»',a:'Séneca'},
+  {q:'«El valiente desea las cosas difíciles.»',a:'Aristóteles'},
+  {q:'«Sé tú mismo el cambio que quieres ver en el mundo.»',a:'Mahatma Gandhi'},
+  {q:'«Temer la muerte es como temer la ignorancia.»',a:'Sócrates'},
+  {q:'«Prefiero morir de pie que vivir de rodillas.»',a:'Emiliano Zapata'},
+  {q:'«El primer paso hacia la sabiduría es conocerse a uno mismo.»',a:'Sócrates'},
+  {q:'«No te quejes de la nieve en el techo del vecino cuando tu umbral está sucio.»',a:'Confucio'},
+  {q:'«El hombre que mueve montañas comienza cargando pequeñas piedras.»',a:'Confucio'},
+  {q:'«Actúa bien en el presente, sin importar lo que hiciste ayer.»',a:'Marco Aurelio'},
+];
+
+function renderStoicQuote(){
+  const day = Math.floor(Date.now() / 86400000);
+  const {q,a} = STOIC[day % STOIC.length];
+  const qEl = document.getElementById('stoic-quote');
+  const aEl = document.getElementById('stoic-author');
+  if(qEl) qEl.textContent = q;
+  if(aEl) aEl.textContent = '— ' + a;
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────────────────
