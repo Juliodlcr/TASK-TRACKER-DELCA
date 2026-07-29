@@ -24,21 +24,6 @@
       --accent:  #111111;
       --red:     #cc0000;
     }
-    :root.dark {
-      --bg:      #0f1117;
-      --surface: #1a1d24;
-      --surf2:   #22252e;
-      --border:  #2e3140;
-      --text:    #f0f0f0;
-      --muted:   #7a7f8e;
-      --accent:  #f0f0f0;
-      --red:     #f87171;
-    }
-    #theme-btn {
-      background: none; border: 1px solid var(--border); border-radius: 6px;
-      color: var(--text); cursor: pointer; padding: 4px 8px; font-size: 11px;
-      display: flex; align-items: center; gap: 4px; flex-shrink: 0;
-    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
     html, body { height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg); color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; }
@@ -103,7 +88,6 @@
       background: var(--surf2); color: var(--text); transition: opacity .15s;
     }
     .act-btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
-    :root.dark .act-btn.primary { color: #111; }
     .act-btn svg { width: 12px; height: 12px; }
 
     /* ── BODY: 4 rows ── */
@@ -425,8 +409,7 @@
       <div class="p-track"><div class="p-fill" id="d-pfill" style="width:0%"></div></div>
     </div>
     <div class="topbar-right">
-      <button id="theme-btn-d" class="act-btn" onclick="toggleTheme()"></button>
-      <button class="act-btn" onclick="openSettings()">
+<button class="act-btn" onclick="openSettings()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Hábito
       </button>
@@ -499,10 +482,7 @@
     <div class="m-hdr">
       <h1 style="display:inline-flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="2"/></svg>Habit Tracker</h1>
       <div class="m-right">
-        <button id="theme-btn" onclick="toggleTheme()">
-          <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </button>
-        <button class="act-btn primary" onclick="startExport()" style="padding:5px 9px;font-size:10px">
+<button class="act-btn primary" onclick="startExport()" style="padding:5px 9px;font-size:10px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Compartir
         </button>
@@ -618,16 +598,12 @@
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const isDark = ()=>document.documentElement.classList.contains('dark');
 const WC = ['#111111','#333333','#555555','#777777','#999999'];
-const WC_D = ['#f0f0f0','#cccccc','#aaaaaa','#888888','#666666'];
 const BC = ['#111111','#333333','#555555','#777777','#999999','#222222','#444444','#666666','#888888','#aaaaaa'];
-const BC_D = ['#f0f0f0','#cccccc','#aaaaaa','#888888','#666666','#eeeeee','#bbbbbb','#999999','#777777','#555555'];
 const MC_COLORS = ['#111111','#555555','#999999'];
-const MC_D = ['#f0f0f0','#aaaaaa','#666666'];
-const wc = i=>(isDark()?WC_D:WC)[i%WC.length];
-const bc = i=>(isDark()?BC_D:BC)[i%BC.length];
-const mc = i=>(isDark()?MC_D:MC_COLORS)[i%MC_COLORS.length];
+const wc = i=>WC[i%WC.length];
+const bc = i=>BC[i%BC.length];
+const mc = i=>MC_COLORS[i%MC_COLORS.length];
 const DAYS   = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MR = ['Mañana','Tarde','Noche'];
@@ -731,7 +707,7 @@ function buildHabitTable(headId, bodyId, y, m) {
   let h='<tr><th style="width:110px;text-align:left;padding-right:8px">Hábito</th>';
   ws.forEach((w,wi)=>{
     const last=wi===ws.length-1;
-    h+=`<th colspan="${w.days.length}" class="wlbl${last?'':' week-end'}" style="background:${wc(wi)};color:${isDark()?'#111':'#fff'}">Sem ${wi+1}</th>`;
+    h+=`<th colspan="${w.days.length}" class="wlbl${last?'':' week-end'}" style="background:${wc(wi)};color:#fff">Sem ${wi+1}</th>`;
   });
   h+='<th style="width:36px;font-size:8px;color:var(--muted)">%</th></tr><tr><th></th>';
   // day header row
@@ -862,7 +838,7 @@ function mentalColor(v){
 function buildMentalTable(headId,bodyId,y,m){
   const ws=weeks(y,m),first=fdow(y,m);
   let h='<tr><th style="width:110px"></th>';
-  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${wc(wi)};color:${isDark()?'#111':'#fff'}">Sem ${wi+1}</th>`);
+  ws.forEach((w,wi)=>h+=`<th colspan="${w.days.length}" class="wlbl" style="background:${wc(wi)};color:#fff">Sem ${wi+1}</th>`);
   h+='</tr><tr><th></th>';
   ws.forEach((w,wi)=>w.days.forEach(d=>{const dow=(first+d-1)%7;h+=`<th class="day-th" style="background:${wc(wi)}18;color:var(--muted)">${DAYS[dow]}<br>${d}</th>`;}));
   h+='</tr>';
@@ -919,29 +895,24 @@ function drawHabitChart(id,y,m){
   const gW=W-pad.l-pad.r, gH=Math.max(H,40)-pad.t-pad.b;
   const px=i=>pad.l+(i/(days-1))*gW, py=v=>pad.t+gH*(1-v);
 
-  const dark=document.documentElement.classList.contains('dark');
-  const gridC=dark?'rgba(255,255,255,.1)':'rgba(0,0,0,.08)';
-  const labelC=dark?'rgba(255,255,255,.45)':'rgba(0,0,0,.4)';
-  const lineC=dark?'#f0f0f0':'#111111';
-
   [0,.25,.5,.75,1].forEach(v=>{
     const yy=py(v);
-    ctx.strokeStyle=gridC;ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle=labelC;ctx.font='8px sans-serif';
+    ctx.fillStyle='rgba(0,0,0,.4)';ctx.font='8px sans-serif';
     ctx.textAlign='right';
     ctx.fillText(Math.round(v*100)+'%', pad.l-4, Math.max(yy+3, 9));
   });
 
   const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
-  grad.addColorStop(0,dark?'rgba(240,240,240,.15)':'rgba(17,17,17,.18)');
-  grad.addColorStop(1,dark?'rgba(240,240,240,.01)':'rgba(17,17,17,.02)');
+  grad.addColorStop(0,'rgba(17,17,17,.18)');
+  grad.addColorStop(1,'rgba(17,17,17,.02)');
   ctx.beginPath();
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.lineTo(px(days-1),H-pad.b);ctx.lineTo(pad.l,H-pad.b);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
 
-  ctx.beginPath();ctx.strokeStyle=lineC;ctx.lineWidth=1.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#111111';ctx.lineWidth=1.5;ctx.lineJoin='round';
   pcts.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
   ctx.stroke();
 }
@@ -973,15 +944,11 @@ function drawMentalChart(id,y,m){
   const px=i=>pad.l+(i/(days-1||1))*gW;
   const py=v=>pad.t+gH*(1-v/10);
 
-  const darkM=document.documentElement.classList.contains('dark');
-  const gridCM=darkM?'rgba(255,255,255,.1)':'rgba(0,0,0,.08)';
-  const labelCM=darkM?'rgba(255,255,255,.45)':'rgba(0,0,0,.4)';
-
   [0,5,10].forEach(v=>{
     const yy=py(v);
-    ctx.strokeStyle=gridCM;ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
-    ctx.fillStyle=labelCM;ctx.font='8px sans-serif';
+    ctx.fillStyle='rgba(0,0,0,.4)';ctx.font='8px sans-serif';
     ctx.textAlign='right';
     ctx.fillText(v, pad.l-4, Math.max(yy+3, 9));
   });
@@ -1232,28 +1199,6 @@ document.getElementById('btn-install').onclick=async()=>{if(!dP)return;dP.prompt
 document.getElementById('btn-dismiss').onclick=()=>{banner.classList.remove('show');localStorage.setItem('inst_dismissed','1');};
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
-// ── THEME TOGGLE ──────────────────────────────────────────────────────────
-const SUN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-const MOON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
-
-function applyTheme(dark){
-  if(dark){ document.documentElement.classList.add('dark'); }
-  else { document.documentElement.classList.remove('dark'); }
-  const icon = dark ? SUN_SVG : MOON_SVG;
-  const btn = document.getElementById('theme-btn');
-  if(btn) btn.innerHTML = icon;
-  const btnD = document.getElementById('theme-btn-d');
-  if(btnD) btnD.innerHTML = icon;
-}
-
-function toggleTheme(){
-  const dark = document.documentElement.classList.contains('dark');
-  localStorage.setItem('theme', dark ? 'light' : 'dark');
-  applyTheme(!dark);
-  renderAll();
-}
-
-applyTheme(localStorage.getItem('theme') === 'dark');
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────
 function renderAll(){
